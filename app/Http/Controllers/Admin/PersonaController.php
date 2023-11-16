@@ -10,6 +10,14 @@ use App\Models\Ship;
 
 class PersonaController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('can:mantencion.personas.index')->only('index');
+        $this->middleware('can:mantencion.personas.create')->only('create','store');
+        $this->middleware('can:mantencion.personas.edit')->only('edit','update');
+        $this->middleware('can:mantencion.personas.destroy')->only('destroy');
+    }
+
     /**
      * Display a listing of the resource.
      *

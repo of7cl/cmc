@@ -3,11 +3,34 @@
 @section('title', 'Editar Usuario')
 
 @section('content_header')
-    <h1>Editar Usuario</h1>
+    <h1>Asignar un Rol</h1>
 @stop
 
 @section('content')
     @if (session('info'))
+        <div class="alert alert-success">
+            <strong>{{session('info')}}</strong>
+        </div>
+    @endif
+    <div class="card">
+        <div class="card-body">
+            <p class="h5">Nombre</p>
+            <p class="form-control">{{$user->name}}</p>
+            {!! Form::model($user, ['route' => ['admin.users.update', $user], 'method' => 'put']) !!}
+                <h2 class="h5">Listado de roles</h2>
+                @foreach ($roles as $role)
+                    <div>
+                        <label>
+                            {!! Form::checkbox('roles[]', $role->id, null, ['class' => 'mr-1']) !!}
+                            {{$role->name}}
+                        </label>
+                    </div>
+                @endforeach
+                {!! Form::submit('Asignar Rol', ['class' => 'btn btn-primary mt-2']) !!}
+            {!! Form::close() !!}
+        </div>
+    </div>
+    {{-- @if (session('info'))
         <div class="alert alert-success">
             <strong>{{session('info')}}</strong>
         </div>
@@ -39,6 +62,6 @@
                 {!! Form::submit('Actualizar Usuario', ['class' => 'btn btn-primary']) !!}
             {!! Form::close() !!}
         </div>
-    </div>
+    </div> --}}
 @stop
 

@@ -8,6 +8,14 @@ use Illuminate\Http\Request;
 
 class ShipController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('can:mantencion.ships.index')->only('index');
+        $this->middleware('can:mantencion.ships.create')->only('create','store');
+        $this->middleware('can:mantencion.ships.edit')->only('edit','update');
+        $this->middleware('can:mantencion.ships.destroy')->only('destroy');
+    }
+
     /**
      * Display a listing of the resource.
      *

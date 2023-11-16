@@ -8,6 +8,14 @@ use App\Models\Rango;
 
 class RangoController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('can:mantencion.rangos.index')->only('index');
+        $this->middleware('can:mantencion.rangos.create')->only('create','store');
+        $this->middleware('can:mantencion.rangos.edit')->only('edit','update');
+        $this->middleware('can:mantencion.rangos.destroy')->only('destroy');
+    }
+
     /**
      * Display a listing of the resource.
      *

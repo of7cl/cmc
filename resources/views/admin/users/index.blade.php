@@ -18,6 +18,7 @@
                         <th>ID</th>
                         <th>Nombre</th>
                         <th>Correo</th>
+                        <th></th>
                         {{-- <th colspan="2"></th> --}}
                     </tr>
                 </thead>
@@ -27,10 +28,10 @@
                             <td>{{$user->id}}</td>
                             <td>{{$user->name}}</td>
                             <td>{{$user->email}}</td>
-                            {{-- <td width="10px">
+                            <td width="10px">
                                 <a class="btn btn-primary btn-sm" href="{{route('admin.users.edit', $user)}}">Editar</a>
                             </td>
-                            <td width="10px">
+                            {{-- <td width="10px">
                                 <form action="{{route('admin.users.destroy', $user)}}" method="POST">
                                     @csrf
                                     @method('delete')

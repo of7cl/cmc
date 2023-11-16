@@ -6,9 +6,16 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Spatie\Permission\Models\Role;
 
 class UserController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('can:administracion.users.index')->only('index');
+        $this->middleware('can:administracion.users.edit')->only('edit','update');
+    }
+    
     /**
      * Display a listing of the resource.
      *
@@ -71,8 +78,9 @@ class UserController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function edit(User $user)
-    {
-        return view('admin.users.edit', compact('user'));
+    {        
+        $roles = Role::all();
+        return view('admin.users.edit', compact('user', 'roles'));
     }
 
     /**
@@ -84,14 +92,17 @@ class UserController extends Controller
      */
     public function update(Request $request, User $user)
     {
-        $request->validate([
+        /* $request->validate([
             'name'      =>  'required',
             'email'     =>  "required|email|unique:users,email,$user->id",
             'password'  =>  'required'
         ]);
         $user->update($request->all());
 
-        return redirect()->route('admin.users.edit', $user)->with('info', 'Usuario actualizado con éxito!');
+        return redirect()->route('admin.users.edit', $user)->with('info', 'Usuario actualizado con éxito!'); */
+
+        $user->roles()->sync($request->roles);
+        return redirect()->route('admin.users.edit', $user)->with('info', 'Se asignó los roles con éxito!');
     }
 
     /**

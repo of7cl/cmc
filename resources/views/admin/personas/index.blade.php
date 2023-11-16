@@ -2,8 +2,10 @@
 
 @section('title', 'Personal')
 
-@section('content_header')    
-    <a class="btn btn-secondary btn-sm float-right" href="{{route('admin.personas.create')}}">Nuevo Personal</a>
+@section('content_header') 
+    @can('admin.personas.create')
+        <a class="btn btn-secondary btn-sm float-right" href="{{route('admin.personas.create')}}">Nuevo Personal</a>    
+    @endcan       
     <h1>Lista del Personal</h1>
 @stop
 

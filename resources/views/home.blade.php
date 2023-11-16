@@ -9,8 +9,10 @@
 @section('content')
     <div class="card">
         <div class="card-header">
-            <h1 class="card-title">Bienvenido!</h1>
+            <h1 class="card-title">Bienvenido!</h1>                      
         </div>
-        
+        <div class="card-body">            
+             
+        </div>
     </div>
 @stop

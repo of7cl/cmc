@@ -14,6 +14,5 @@ use Illuminate\Support\Facades\Route;
 Route::get('', [HomeController::class, 'index']);
 Route::resource('users', UserController::class)->names('admin.users');
 Route::resource('rangos', RangoController::class)->names('admin.rangos');
-/* Route::resource('naves', NaveController::class)->names('admin.naves'); */
 Route::resource('ships', ShipController::class)->names('admin.ships');
 Route::resource('personas', PersonaController::class)->names('admin.personas');

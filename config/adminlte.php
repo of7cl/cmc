@@ -292,168 +292,87 @@ return [
     |
     */
 
-    'menu' => [
-        // Navbar items:
-        /*[
-            'type'         => 'navbar-search',
-            'text'         => 'search',
-            'topnav_right' => true,
-        ],*/
-        /* [
-            'type'         => 'fullscreen-widget',
-            'topnav_right' => true,
-        ], */
-
-        // Sidebar items:
-        /*[
-            'type' => 'sidebar-menu-search',
-            'text' => 'search',
-        ],*/
-        /* [
-            'text' => 'blog',
-            'url'  => 'admin/blog',
-            'can'  => 'manage-blog',
-        ], */
+    'menu' => [        
         [
             'text' => 'Inicio',            
             'route'  => 'home',
             'icon' => 'fas fa-fw fa-home',
-        ],
-        /*[
-            'text'        => 'pages',
-            'url'         => 'admin/pages',
-            'icon'        => 'far fa-fw fa-file',
-            'label'       => 4,
-            'label_color' => 'success',
-        ],*/
-        //['header' => 'account_settings'],
-        /*[
-            'text' => 'profile',
-            'url'  => 'admin/settings',
-            'icon' => 'fas fa-fw fa-user',
-        ],*/
-        /*[
-            'text' => 'change_password',
-            'url'  => 'admin/settings',
-            'icon' => 'fas fa-fw fa-lock',
-        ],*/
+        ],        
         [
             'text' => 'Documentos',
             'url'  => '#',
             'icon' => 'fas fa-fw fa-book',
+            'can'  => 'documentos.index',
         ],
         [
             'text' => 'Vacaciones y Descanso',
             'url'  => '#',
             'icon' => 'fas fa-fw fa-suitcase',
+            'can'  => 'vacaciones-descanso.index',
         ],
         [
             'text' => 'Planificador de Embarcos',
             'url'  => '#',
             'icon' => 'fas fa-fw fa-anchor',
+            'can'  => 'planificador-embarcos.index',
         ],
         [
             'text'      => 'Reportes',            
             'icon'      => 'fas fa-fw fa-tasks',
+            'can'       => 'reportes',
             'submenu'   => [
                 [
                     'text'      => 'Descanso y Vacaciones',
                     'url'       => '#',
-                    'active'    => ['admin/reportes*']
+                    'active'    => ['admin/reportes*'],
+                    'can'  => 'reportes.descanso-vacaciones.index',
                 ]
             ]            
         ],
         [
             'text'      => 'Mantención',            
             'icon'      => 'fas fa-fw fa-cogs',
+            'can'  => 'mantencion',
             'submenu'   => [
                 [
                     'text'      => 'Personal',
                     'route'       => 'admin.personas.index',
-                    'active'    => ['admin/personas*']
+                    'active'    => ['admin/personas*'],
+                    'can'  => 'mantencion.personas.index',
                 ],
                 [
                     'text'      => 'Naves',                    
                     'route'       => 'admin.ships.index',
-                    'active'    => ['admin/ships*']
+                    'active'    => ['admin/ships*'],
+                    'can'  => 'mantencion.ships.index',
                 ],
                 [
                     'text'      => 'Rangos',
                     'route'       => 'admin.rangos.index',
-                    'active'    => ['admin/rangos*']
+                    'active'    => ['admin/rangos*'],
+                    'can'  => 'mantencion.rangos.index',
                 ],
                 [
                     'text'      => 'Documentación',
                     'url'       => '#',
-                    'active'    => ['admin/documentos*']
+                    'active'    => ['admin/documentacion*'],
+                    'can'       => 'mantencion.documentos.index',
                 ]
             ]            
         ],
         [
             'text'      => 'Administración',            
-            'icon'      => 'fas fa-fw fa-cog',
+            'icon'      => 'fas fa-fw fa-cog',            
+            'can'       => 'administracion',
             'submenu'   => [
                 [
                     'text'      => 'Usuarios Sistema',
                     'route'       => 'admin.users.index',
-                    'active'    => ['admin/users*']                      
+                    'active'    => ['admin/users*'],
+                    'can'       => 'administracion.users.index'
                 ]
             ]            
-        ],
-        /* [
-            'text'    => 'multilevel',
-            'icon'    => 'fas fa-fw fa-plus',
-            'submenu' => [
-                [
-                    'text' => 'level_one',
-                    'url'  => '#',
-                ],
-                [
-                    'text'    => 'level_one',
-                    'url'     => '#',
-                    'submenu' => [
-                        [
-                            'text' => 'level_two',
-                            'url'  => '#',
-                        ],
-                        [
-                            'text'    => 'level_two',
-                            'url'     => '#',
-                            'submenu' => [
-                                [
-                                    'text' => 'level_three',
-                                    'url'  => '#',
-                                ],
-                                [
-                                    'text' => 'level_three',
-                                    'url'  => '#',
-                                ],
-                            ],
-                        ],
-                    ],
-                ],
-                [
-                    'text' => 'level_one',
-                    'url'  => '#',
-                ],
-            ],
-        ], */
-        //['header' => 'labels'],
-        /*[
-            'text'       => 'important',
-            'icon_color' => 'red',
-            'url'        => '#',
-        ],
-        [
-            'text'       => 'warning',
-            'icon_color' => 'yellow',
-            'url'        => '#',
-        ],
-        [
-            'text'       => 'information',
-            'icon_color' => 'cyan',
-            'url'        => '#',
-        ],*/
+        ],        
     ],
 
     /*

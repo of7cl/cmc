@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use App\Models\User;
 
 class DatabaseSeeder extends Seeder
 {
@@ -20,5 +21,26 @@ class DatabaseSeeder extends Seeder
         //     'name' => 'Test User',
         //     'email' => 'test@example.com',
         // ]);
+
+        $this->call(RoleSeeder::class);
+
+        User::create([
+            'name' => 'Administrador',
+            'email' => 'admin@cmcflota.cl',
+            'password' => bcrypt('pass1234')
+        ])->assignRole('Administrador');
+
+        User::create([
+            'name' => 'Usuario',
+            'email' => 'usuario@cmcflota.cl',
+            'password' => bcrypt('pass1234')
+        ])->assignRole('Usuario');
+
+        User::create([
+            'name' => 'Invitado',
+            'email' => 'invitado@cmcflota.cl',
+            'password' => bcrypt('pass1234')
+        ]);
+        
     }
 }

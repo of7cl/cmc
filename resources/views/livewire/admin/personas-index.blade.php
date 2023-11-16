@@ -54,11 +54,13 @@
                                 <a class="btn btn-primary btn-sm" href="{{route('admin.personas.edit', $persona)}}">Editar</a>
                             </td>
                             <td width="10px">
-                                <form action="{{route('admin.personas.destroy', $persona)}}" method="POST" class="formulario-eliminar">
-                                    @csrf
-                                    @method('delete')
-                                    <button class="btn btn-danger btn-sm" type="submit">Eliminar</button>
-                                </form>
+                                @can('mantencion.personas.destroy')                                                                    
+                                    <form action="{{route('admin.personas.destroy', $persona)}}" method="POST" class="formulario-eliminar">
+                                        @csrf
+                                        @method('delete')
+                                        <button class="btn btn-danger btn-sm" type="submit">Eliminar</button>
+                                    </form>
+                                @endcan
                             </td>
                         </tr>
                     @endforeach
