@@ -46,6 +46,7 @@ class RoleSeeder extends Seeder
         Permission::create(['name' => 'mantencion.rangos.create'])->syncRoles([$role1, $role2]);
         Permission::create(['name' => 'mantencion.rangos.edit'])->syncRoles([$role1, $role2]);
         Permission::create(['name' => 'mantencion.rangos.destroy'])->syncRoles([$role1, $role2]);
+        Permission::create(['name' => 'mantencion.rangos.show'])->syncRoles([$role1, $role2]);
         // Documentación
         Permission::create(['name' => 'mantencion.documentos.index'])->syncRoles([$role1, $role2]);
         Permission::create(['name' => 'mantencion.documentos.create'])->syncRoles([$role1, $role2]);

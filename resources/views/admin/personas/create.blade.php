@@ -28,14 +28,14 @@
             </div>
             <div class="form-group">
                 {!! Form::label('rango_id', 'Rango') !!}
-                {!! Form::select('rango_id', $rangos, null, ['class' => 'form-control', 'placeholder' => 'Ingresar Rango...']) !!}
+                {!! Form::select('rango_id', $rangos, null, ['class' => 'form-control', 'placeholder' => 'Seleccionar Rango...']) !!}
                 @error('rango_id')
                     <span class="text-danger">{{$message}}</span>
                 @enderror
             </div>
             <div class="form-group">
                 {!! Form::label('ship_id', 'Nave') !!}
-                {!! Form::select('ship_id', $ships, null, ['class' => 'form-control', 'placeholder' => 'Ingresar Nave...']) !!}
+                {!! Form::select('ship_id', $ships, null, ['class' => 'form-control', 'placeholder' => 'Seleccionar Nave...']) !!}
                 @error('ship_id')
                     <span class="text-danger">{{$message}}</span>
                 @enderror

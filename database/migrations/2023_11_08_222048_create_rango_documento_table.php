@@ -13,14 +13,16 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('rango_documento', function (Blueprint $table) {
+        Schema::create('documento_rango', function (Blueprint $table) {
             $table->id();
 
             $table->unsignedBigInteger('rango_id');
             $table->unsignedBigInteger('documento_id');
+            
+            $table->enum('obligatorio', [1,2])->default(1); // 1 => obligatorio, 2=> no obligatorio
 
-            $table->foreign('rango_id')->references('id')->on('rangos');
-            $table->foreign('documento_id')->references('id')->on('documentos');
+            $table->foreign('rango_id')->references('id')->on('rangos')->onDelete('cascade');
+            $table->foreign('documento_id')->references('id')->on('documentos')->onDelete('cascade');
 
             $table->timestamps();
         });

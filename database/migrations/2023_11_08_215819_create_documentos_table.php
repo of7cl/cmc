@@ -16,7 +16,11 @@ return new class extends Migration
         Schema::create('documentos', function (Blueprint $table) {
             $table->id();
 
-            $table->string('nombre');
+            $table->string('nr_documento')->nullable();
+            $table->string('codigo_omi')->nullable();
+
+            $table->string('nombre')->nullable();
+            $table->string('name')->nullable();
 
             $table->enum('estado', [1,2])->default(1); // 1 => activo, 2=> inactivo
 

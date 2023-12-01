@@ -1,12 +1,12 @@
 @extends('adminlte::page')
 
-@section('title', 'Personal')
+@section('title', 'Documentos')
 
 @section('content_header') 
-    @can('mantencion.personas.create')
-        <a class="btn btn-secondary btn-sm float-right" href="{{route('admin.personas.create')}}">Nuevo Personal</a>    
+    @can('mantencion.documentos.create')
+        <a class="btn btn-secondary btn-sm float-right" href="{{route('admin.documentos.create')}}">Nuevo Documento</a>    
     @endcan       
-    <h1>Lista del Personal</h1>
+    <h1>Lista de Documentos</h1>
 @stop
 
 @section('content')    
@@ -15,7 +15,7 @@
             <strong>{{session('info')}}</strong>
         </div>
     @endif
-    @livewire('admin.personas-index')
+    @livewire('admin.documentos-index')
 @stop
 
 @section('js')

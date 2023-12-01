@@ -11,7 +11,7 @@
         {{-- <div class="card-header">
             <a class="btn btn-primary" href="{{route('admin.users.create')}}">Agregar Usuario</a>
         </div> --}}
-        <div class="card-body">
+        <div class="card-body table-responsive">
             <table class="table table-striped">
                 <thead>
                     <tr>
@@ -28,8 +28,8 @@
                             <td>{{$user->id}}</td>
                             <td>{{$user->name}}</td>
                             <td>{{$user->email}}</td>
-                            <td width="10px">
-                                <a class="btn btn-primary btn-sm" href="{{route('admin.users.edit', $user)}}">Editar</a>
+                            <td width="110px">
+                                <a class="btn btn-primary btn-sm" href="{{route('admin.users.edit', $user)}}">Asignar Rol</a>
                             </td>
                             {{-- <td width="10px">
                                 <form action="{{route('admin.users.destroy', $user)}}" method="POST">

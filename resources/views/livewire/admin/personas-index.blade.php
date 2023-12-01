@@ -1,10 +1,10 @@
 <div class="card">
     <div class="card-header">
-        <input wire:model="search" class="form-control" placeholder="Ingrese el nombre de la persona">
+        <input wire:model="search" class="form-control" placeholder="Ingrese nombre de la persona">
     </div>
     
     @if ($personas->count())            
-        <div class="card-body">
+        <div class="card-body table-responsive">
             <table class="table table-striped">
                 <thead>
                     <tr>
@@ -16,7 +16,7 @@
                         <th>Fecha Ingreso</th>
                         {{-- <th>Fecha Baja</th>
                         <th>Fecha Nacimiento</th> --}}
-                        <th colspan="2"></th>
+                        <th colspan="3"></th>
                     </tr>
                 </thead>
                 <tbody>                    
@@ -51,6 +51,9 @@
                                 @endif                                
                             </td> --}}
                             <td width="10px">
+                                <a class="btn btn-success btn-sm" href="{{route('admin.personas.show', $persona)}}">Documentos</a>
+                            </td>
+                            <td width="10px">
                                 <a class="btn btn-primary btn-sm" href="{{route('admin.personas.edit', $persona)}}">Editar</a>
                             </td>
                             <td width="10px">
@@ -67,7 +70,7 @@
                 </tbody>
             </table>
         </div>
-        <div class="card-footer">
+        <div class="card-footer table-responsive">
             {{$personas->links()}}
         </div>
     @else

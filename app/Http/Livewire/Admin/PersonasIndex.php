@@ -22,12 +22,9 @@ class PersonasIndex extends Component
 
     public function render()
     {        
-        $personas = Persona::where('personas.estado', 1)
-                                /* ->innerJoin('rangos', 'personas.rango_id', '=', 'rangos.id') */
-                                /* ->crossJoin('rangos') */
-                                ->where('personas.nombre', 'LIKE', '%'.$this->search.'%')                                
-                                ->orderBy('personas.id', 'desc')
-                                ->paginate(10);
+        $personas = Persona::where('personas.nombre', 'LIKE', '%'.$this->search.'%')                                
+                            ->orderBy('personas.id', 'desc')
+                            ->paginate(10);
         
         return view('livewire.admin.personas-index', compact('personas'));
     }

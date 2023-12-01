@@ -13,19 +13,17 @@
             <strong>{{session('info')}}</strong>
         </div>
     @endif
-    <div class="card">
-        {{-- <div class="card-header">
-            <a class="btn btn-primary" href="{{route('admin.users.create')}}">Agregar Usuario</a>
-        </div> --}}
-        <div class="card-body">
+    <div class="card">        
+        <div class="card-body table-responsive">
             <table class="table table-striped">
                 <thead>
                     <tr>
                         <th>ID</th>
                         <th>Código</th>
                         <th>Nombre</th>
-                        {{-- <th>Nombre Completo</th> --}}
-                        <th colspan="2"></th>
+                        <th>Estado</th>
+                        <th># Documentos</th>                        
+                        <th colspan="3"></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -34,7 +32,15 @@
                             <td>{{$rango->id}}</td>
                             <td>{{$rango->codigo}}</td>
                             <td>{{$rango->nombre}}</td>
-                            {{-- <td>{{$rango->nombre_completo}}</td> --}}
+                            @if ($rango->estado==1)
+                                <td>Activo</td>
+                            @else
+                                <td>Inactivo</td>
+                            @endif                            
+                            <td class="text-align: center">({{$rango->documentos->count()}})</td>                            
+                            <td width="10px">
+                                <a class="btn btn-success btn-sm" href="{{route('admin.rangos.show', $rango)}}">Documentos</a>
+                            </td>
                             <td width="10px">
                                 <a class="btn btn-primary btn-sm" href="{{route('admin.rangos.edit', $rango)}}">Editar</a>
                             </td>
@@ -53,11 +59,6 @@
             
 
         </div>
-
-        {{-- <div class="mb-4">
-            {{$rangos->links()}}
-        </div> --}}
-        
     </div>
 @stop
 

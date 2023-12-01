@@ -33,8 +33,8 @@ class Persona extends Model
     }
 
     // relacion muchos a muchos
-    public function documentos(){
-        return $this->belongsToMany(Documento::class);
+    public function documento(){
+        return $this->belongsToMany(Documento::class)->withPivot(['persona_id', 'documento_id', 'rango_id', 'fc_inicio', 'fc_fin']);
     }
     
 }

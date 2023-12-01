@@ -15,11 +15,11 @@ class Rango extends Model
         'nombre_completo'
     ];
 
-    public function getRouteKeyName()
+    /* public function getRouteKeyName()
     {
         return "codigo";
     }
-
+ */
     // relacion uno a muchos
     public function persona(){
         return $this->hasMany(Persona::class);
@@ -27,6 +27,6 @@ class Rango extends Model
 
     // relacion muchos a muchos
     public function documentos(){
-        return $this->belongsToMany(Documento::class);
+        return $this->belongsToMany(Documento::class)->withPivot('obligatorio');
     }
 }

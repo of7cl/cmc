@@ -256,7 +256,7 @@ return [
     */
 
     'use_route_url' => false,
-    'dashboard_url' => '',
+    'dashboard_url' => '/',
     'logout_url' => 'logout',
     'login_url' => 'login',
     'register_url' => 'register',
@@ -300,7 +300,7 @@ return [
         ],        
         [
             'text' => 'Documentos',
-            'url'  => '#',
+            'route'  => 'admin.control.index',
             'icon' => 'fas fa-fw fa-book',
             'can'  => 'documentos.index',
         ],
@@ -354,8 +354,8 @@ return [
                 ],
                 [
                     'text'      => 'Documentación',
-                    'url'       => '#',
-                    'active'    => ['admin/documentacion*'],
+                    'route'       => 'admin.documentos.index',
+                    'active'    => ['admin/documentos*'],
                     'can'       => 'mantencion.documentos.index',
                 ]
             ]            

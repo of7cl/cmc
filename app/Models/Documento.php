@@ -9,6 +9,13 @@ class Documento extends Model
 {
     use HasFactory;
 
+    protected $fillable = [
+        'nr_documento',
+        'codigo_omi',
+        'nombre',
+        'name'
+    ];
+
     // relacion muchos a muchos
     public function personas(){
         return $this->belongsToMany(Persona::class);
