@@ -54,4 +54,4 @@ Route::get('control/index', function (Request $request){
 })->name('admin.control.index');
 
 //Route::resource('fechas', CarbonController::class)->names('fechas');
-Route::get('/fecha_hoy', [CarbonController::class, ('fecha_hoy')]);
+//Route::get('/fecha_hoy', [CarbonController::class, ('fecha_hoy')]);
