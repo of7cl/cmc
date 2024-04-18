@@ -3,6 +3,8 @@
 namespace Database\Seeders;
 
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+
+use App\Models\ParameterDoc;
 use Illuminate\Database\Seeder;
 use App\Models\User;
 
@@ -40,6 +42,12 @@ class DatabaseSeeder extends Seeder
             'name' => 'Invitado',
             'email' => 'invitado@cmcflota.cl',
             'password' => bcrypt('pass1234')
+        ]);      
+        
+        ParameterDoc::create([
+            'flag_red' => 0,
+            'flag_yellow' => 90,
+            'flag_green' => 180
         ]);
         
     }

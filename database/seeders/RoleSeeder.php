@@ -47,22 +47,30 @@ class RoleSeeder extends Seeder
         Permission::create(['name' => 'mantencion.rangos.edit'])->syncRoles([$role1, $role2]);
         Permission::create(['name' => 'mantencion.rangos.destroy'])->syncRoles([$role1, $role2]);
         Permission::create(['name' => 'mantencion.rangos.show'])->syncRoles([$role1, $role2]);
+        
         // Documentación
         Permission::create(['name' => 'mantencion.documentos.index'])->syncRoles([$role1, $role2]);
         Permission::create(['name' => 'mantencion.documentos.create'])->syncRoles([$role1, $role2]);
         Permission::create(['name' => 'mantencion.documentos.edit'])->syncRoles([$role1, $role2]);
         Permission::create(['name' => 'mantencion.documentos.destroy'])->syncRoles([$role1, $role2]);
 
+        // Parámetros
+        Permission::create(['name' => 'mantencion.parameterdocs.index'])->syncRoles([$role1, $role2]);
+        Permission::create(['name' => 'mantencion.parameterdocs.create'])->syncRoles([$role1, $role2]);
+        Permission::create(['name' => 'mantencion.parameterdocs.edit'])->syncRoles([$role1, $role2]);
+        Permission::create(['name' => 'mantencion.parameterdocs.destroy'])->syncRoles([$role1, $role2]);
+
         // Reportes
         Permission::create(['name' => 'reportes'])->syncRoles([$role1]);                
-        // Descanso y Vacaciones                
-        Permission::create(['name' => 'reportes.descanso-vacaciones.index'])->syncRoles([$role1]);                
+        
+        // Control de Trayectoria                
+        Permission::create(['name' => 'reportes.control-trayectoria.index'])->syncRoles([$role1]);                
 
-        // Planificador de Embarcos
-        Permission::create(['name' => 'planificador-embarcos.index'])->syncRoles([$role1, $role2]);        
+        // Programación de Embarcos
+        Permission::create(['name' => 'programacion-embarcos.index'])->syncRoles([$role1, $role2]);        
 
-        // Vacaciones y descanso
-        Permission::create(['name' => 'vacaciones-descanso.index'])->syncRoles([$role1, $role2]);
+        // Control de Trayectoria                
+        Permission::create(['name' => 'control-trayectoria.index'])->syncRoles([$role1, $role2]);
 
         // Documentos
         Permission::create(['name' => 'documentos.index'])->syncRoles([$role1, $role2]);

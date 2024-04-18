@@ -8,8 +8,8 @@
             <table class="table table-striped">
                 <thead>
                     <tr>
-                        <th>ID</th>
                         <th>Nombre</th>
+                        <th>ID</th>
                         <th>RUT</th>
                         <th>Rango</th>
                         <th>Nave</th>

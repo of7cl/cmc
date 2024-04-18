@@ -54,16 +54,16 @@ foreach($rangos as $rango)
         </div>        
     </div>   
     @if ($personas->count())
-    <div class="card-body table-responsive text-nowrap" style="max-height: 680px; /* padding:0%; */">            
-        <table class="table-xsm table-striped table-hover">
-            <thead class="table-secondary border border-secondary" {{-- style="position: sticky; top:0;" --}}>
+    <div class="card-body table-responsive text-nowrap" style="max-height: 680px; padding:0%;">            
+        <table class="table-xsm table-striped table-hover" style="border-collapse: separate;">
+            <thead class="table-secondary border border-secondary" style="position: sticky; top:0;">
                 <tr>
-                    <th rowspan="2" class="border border-secondary align-middle text-center">Nave</th>
-                    <th rowspan="2" class="border border-secondary align-middle text-center">Rango</th>
-                    <th rowspan="2" class="border border-secondary align-middle text-center th-lg">Dotación</th>
-                    <th colspan="{{$documentos->count()}}" class="border border-secondary text-center">Documentos</th>                        
-                </tr>
-                <tr>
+                    <th rowspan="1" class="border border-secondary align-middle text-center">Nave</th>
+                    <th rowspan="1" class="border border-secondary align-middle text-center">Rango</th>
+                    <th rowspan="1" class="border border-secondary align-middle text-center th-lg">Dotación</th>
+                    {{-- <th colspan="{{$documentos->count()}}" class="border border-secondary text-center">Documentos</th> --}}
+                {{-- </tr>
+                <tr> --}}
                     @foreach ($documentos as $documento)
                         <th class="border border-secondary align-middle text-center">{{$documento->nr_documento}}</th>
                     @endforeach

@@ -17,7 +17,7 @@ class CarbonController extends Controller
     public function diffFechaActual($fc_fin)
     {
         $now = Carbon::now()->timeZone('America/Santiago');
-        $diff = $now->diffInDays($fc_fin);
+        $diff = $now->diffInDays($fc_fin, false);
         return $diff;
     }   
     

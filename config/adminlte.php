@@ -213,7 +213,7 @@ return [
     |
     */
 
-    'sidebar_mini' => 'lg',
+    'sidebar_mini' => 'sm',
     'sidebar_collapse' => false,
     'sidebar_collapse_auto_size' => false,
     'sidebar_collapse_remember' => false,
@@ -292,7 +292,23 @@ return [
     |
     */
 
-    'menu' => [        
+    'menu' => [
+        [
+            'type'         => 'navbar-notification',
+            'id'           => 'my-notification',      // An ID attribute (required).
+            'icon'         => 'fas fa-bell',          // A font awesome icon (required).
+            'icon_color'   => 'white',              // The initial icon color (optional).
+            'label'        => 0,                      // The initial label for the badge (optional).
+            'label_color'  => 'danger',               // The initial badge color (optional).
+            'route'          => 'notification.index',         // The url to access all notifications/elements (required).
+            'topnav_right' => true,                   // Or "topnav => true" to place on the left (required).
+            'dropdown_mode'   => true,                // Enables the dropdown mode (optional).
+            'dropdown_flabel' => 'Todas las notificaciones', // The label for the dropdown footer link (optional).
+            'update_cfg'   => [
+                'route' => 'notification.new',        // The url to periodically fetch new data (optional).
+                'period' => 10,                       // The update period for get new data (in seconds, optional).
+            ],
+        ],
         [
             'text' => 'Inicio',            
             'route'  => 'home',
@@ -305,16 +321,16 @@ return [
             'can'  => 'documentos.index',
         ],
         [
-            'text' => 'Vacaciones y Descanso',
+            'text' => 'Control de Trayectoria',
             'url'  => '#',
             'icon' => 'fas fa-fw fa-suitcase',
-            'can'  => 'vacaciones-descanso.index',
+            'can'  => 'control-trayectoria.index',
         ],
         [
-            'text' => 'Planificador de Embarcos',
+            'text' => 'Programación de Embarcos',
             'url'  => '#',
             'icon' => 'fas fa-fw fa-anchor',
-            'can'  => 'planificador-embarcos.index',
+            'can'  => 'programacion-embarcos.index',
         ],
         [
             'text'      => 'Reportes',            
@@ -357,6 +373,12 @@ return [
                     'route'       => 'admin.documentos.index',
                     'active'    => ['admin/documentos*'],
                     'can'       => 'mantencion.documentos.index',
+                ],
+                [
+                    'text'      => 'Parámetros',                    
+                    'route'     => 'admin.parameterdocs.index',
+                    'active'    => ['admin/parameterdocs*'],
+                    'can'       => 'mantencion.parameterdocs.index',
                 ]
             ]            
         ],
