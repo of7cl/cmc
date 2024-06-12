@@ -74,6 +74,7 @@ class ParameterDocController extends Controller
         //dd($parameterdoc);
         $request->validate([
             'flag_red'    =>  'required',
+            'flag_orange' =>  'required',
             'flag_yellow' =>  'required',
             'flag_green'  =>  'required'
         ]);        
@@ -82,6 +83,7 @@ class ParameterDocController extends Controller
             ->where('id', $parameterdoc->id)
             ->update([
                 'flag_red' => $request['flag_red'],
+                'flag_orange' => $request['flag_orange'],
                 'flag_yellow' => $request['flag_yellow'],
                 'flag_green' => $request['flag_green']                
         ]);

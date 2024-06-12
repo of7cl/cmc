@@ -21,6 +21,9 @@ return new class extends Migration
             $table->unsignedBigInteger('rango_id');
             $table->date('fc_inicio')->nullable();
             $table->date('fc_fin')->nullable();
+            $table->string('nm_archivo_original')->nullable();
+            $table->string('nm_archivo_guardado')->nullable();
+            $table->enum('estado', [0,1])->default(0); // 0 => activo, 1=> pendiente
 
             $table->foreign('persona_id')->references('id')->on('personas')->onDelete('cascade');
             $table->foreign('documento_id')->references('id')->on('documentos')->onDelete('cascade');

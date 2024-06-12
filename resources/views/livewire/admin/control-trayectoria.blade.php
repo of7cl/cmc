@@ -1,6 +1,34 @@
 <div class="card">
     <div class="card-header">
-        <input wire:model="search" class="form-control" placeholder="Ingrese nombre de la persona">
+        <div class="row">
+            <div class="col-4">
+                {!! Form::label('shipFilter', 'Nave') !!}
+                <select wire:model="shipFilter" class="form-control">
+                    <option value="">Seleccione Nave...</option>
+                    @foreach ($ships as $ship)
+                        <option value="{{ $ship->id }}">{{ $ship->nombre }}</option>
+                    @endforeach
+                </select>
+            </div>
+            <div class="col-4">
+                {!! Form::label('rangoFilter', 'Rango') !!}
+                <select wire:model="rangoFilter" class="form-control">
+                    <option value="">Seleccione Rango...</option>
+                    @foreach ($rangos as $rango)
+                        <option value="{{ $rango->id }}">{{ $rango->nombre }}</option>
+                    @endforeach
+                </select>
+            </div>
+            <div class="col-4">
+                {!! Form::label('nameFilter', 'Nombre') !!}
+                <input wire:model="nameFilter" class="form-control" placeholder="Ingrese nombre de dotación">
+            </div>
+            {{-- <div class="col-4">            
+                <button type="button" class="btn btn-primary" data-toggle="modal"
+                    data-target="#modalCreatePersona">Nuevo</button>
+            </div> --}}
+
+        </div>
     </div>
     
     @if ($personas->count())            
@@ -13,9 +41,10 @@
                         <th>RUT</th>
                         <th>Rango</th>
                         <th>Nave</th>
+                        <th>Fecha Nacimiento</th>
                         <th>Fecha Ingreso</th>
-                        {{-- <th>Fecha Baja</th>
-                        <th>Fecha Nacimiento</th> --}}
+                        {{-- <th>Fecha Baja</th> --}}
+                        
                         <th colspan="3"></th>
                     </tr>
                 </thead>
@@ -34,7 +63,12 @@
                                 @if ($persona->ship_id)
                                     {{$persona->ship->nombre}}
                                 @endif                                
-                            </td>                                
+                            </td>
+                            <td>
+                                @if ($persona->fc_nacimiento)
+                                    {{date('d-m-Y', strtotime($persona->fc_nacimiento))}}
+                                @endif                                
+                            </td>                                 
                             <td>
                                 @if ($persona->fc_ingreso)
                                     {{date('d-m-Y', strtotime($persona->fc_ingreso))}}                                                                            
@@ -44,38 +78,18 @@
                                 @if ($persona->fc_baja)
                                     {{date('d-m-Y', strtotime($persona->fc_baja))}}
                                 @endif                                
+                            </td>                                                        --}}
+                            <td width="10px">
+                                <a class="btn btn-success btn-sm" href="{{route('admin.trayectorias.show', $persona->id)}}">Ver</a>
                             </td>                            
-                            <td>
-                                @if ($persona->fc_nacimiento)
-                                    {{date('d-m-Y', strtotime($persona->fc_nacimiento))}}
-                                @endif                                
-                            </td> --}}
-                            <td width="10px">
-                                <a class="btn btn-success btn-sm" href="{{route('admin.personas.show', $persona->id)}}">Documentos</a>
-                            </td>
-                            <td width="10px">
-                                <a class="btn btn-primary btn-sm" href="{{route('admin.personas.edit', $persona)}}">Editar</a>
-                            </td>
-                            <td width="10px">
-                                @can('mantencion.personas.destroy')                                                                    
-                                    <form action="{{route('admin.personas.destroy', $persona)}}" method="POST" class="formulario-eliminar">
-                                        @csrf
-                                        @method('delete')
-                                        <button class="btn btn-danger btn-sm" type="submit">Eliminar</button>
-                                    </form>
-                                @endcan
-                            </td>
                         </tr>
                     @endforeach
                 </tbody>
             </table>
-        </div>
-        <div class="card-footer table-responsive">
-            {{$personas->links()}}
-        </div>
+        </div>        
     @else
         <div class="card-body">
             <strong>No hay ningún registro...</strong>            
         </div>
-    @endif
+    @endif    
 </div>

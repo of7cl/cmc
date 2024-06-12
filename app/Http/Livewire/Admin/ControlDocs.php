@@ -29,34 +29,32 @@ class ControlDocs extends Component
     public $fc_ingreso;
     public $fc_baja;
     public $id_persona;
+    
+    public $cn_red = 0;
+    public $cn_orange = 0;
+    public $cn_yellow = 0;
+    public $cn_green = 0;
+    public $cn_pendiente = 0;
+    
+    public $loadDocs = false;
 
     protected $listeners = ['render' => 'render'];
+
+
+    public function loadDocs(){
+        $this->loadDocs = true;              
+    }
 
     protected $rules = [
         'nombre' => 'required',
         'rut' => 'required'
-    ];
+    ];   
 
     public function mount()
-    {
-        /*$this->personas = Persona::query()
-            ->where('estado', 1)
-            ->when($this->rangoFilter, function ($query) {
-                $query->where('rango_id', $this->rangoFilter);
-            })
-            ->when($this->shipFilter, function ($query) {
-                $query->where('ship_id', $this->shipFilter);
-            })
-            ->when($this->nameFilter, function ($query) {
-                $query->where('nombre', 'LIKE', '%' . $this->nameFilter . '%');
-            })
-            // ->when($this->id, function ($query) {
-            //     $query->where('id', $this->id_persona);
-            // })
-            ->orderBy('id', 'desc')->get();*/
+    {        
         $this->rangos = Rango::where('estado', 1)->orderBy('nombre', 'asc')->get();
         $this->ships = Ship::where('estado', 1)->orderBy('nombre', 'asc')->get();
-    }
+    }    
 
     public function render()
     {
@@ -73,6 +71,7 @@ class ControlDocs extends Component
             })
             ->orderBy('id', 'desc')->get();
         $documentos = Documento::where('estado', 1)->orderBy('id', 'asc')->get();
+        $this->reset('cn_red','cn_orange','cn_yellow','cn_green','cn_pendiente');
         return view('livewire.admin.control-docs', compact('personas', 'documentos'));
     }
 
@@ -80,8 +79,8 @@ class ControlDocs extends Component
     {
         //dd($id);
         $this->close();
-        $this->id_persona = $id;        
-        $this->persona = Persona::findOrfail($id);        
+        $this->id_persona = $id;
+        $this->persona = Persona::findOrfail($id);
         $this->nombre = $this->persona->nombre;
         $this->rut = $this->persona->rut;
         $this->rango_id = $this->persona->rango_id;
@@ -115,6 +114,6 @@ class ControlDocs extends Component
 
     public function close()
     {
-        $this->reset('nombre','rut','rango_id','ship_id','fc_nacimiento','fc_ingreso','fc_baja');
+        $this->reset('nombre', 'rut', 'rango_id', 'ship_id', 'fc_nacimiento', 'fc_ingreso', 'fc_baja');
     }
 }

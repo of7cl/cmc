@@ -46,6 +46,7 @@ class DatabaseSeeder extends Seeder
         
         ParameterDoc::create([
             'flag_red' => 0,
+            'flag_orange' => 30,
             'flag_yellow' => 90,
             'flag_green' => 180
         ]);

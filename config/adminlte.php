@@ -315,15 +315,16 @@ return [
             'icon' => 'fas fa-fw fa-home',
         ],        
         [
-            'text' => 'Documentos',
+            'text' => 'Documentación',
             'route'  => 'admin.control.index',
             'icon' => 'fas fa-fw fa-book',
             'can'  => 'documentos.index',
         ],
         [
             'text' => 'Control de Trayectoria',
-            'url'  => '#',
+            'route'  => 'admin.trayectorias.index',
             'icon' => 'fas fa-fw fa-suitcase',
+            'active'    => ['admin/trayectorias*'],
             'can'  => 'control-trayectoria.index',
         ],
         [

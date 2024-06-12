@@ -13,13 +13,12 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('parameter_docs', function (Blueprint $table) {
+        Schema::create('trayectorias', function (Blueprint $table) {
             $table->id();
 
-            $table->unsignedBigInteger('flag_red');
-            $table->unsignedBigInteger('flag_orange');
-            $table->unsignedBigInteger('flag_yellow');
-            $table->unsignedBigInteger('flag_green');
+            $table->unsignedBigInteger('persona_id')->unique();
+
+            $table->foreign('persona_id')->references('id')->on('personas')->onDelete('cascade');
 
             $table->timestamps();
         });
@@ -32,6 +31,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('parameter_docs');
+        Schema::dropIfExists('trayectorias');
     }
 };

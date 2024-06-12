@@ -11,6 +11,7 @@ class ParameterDoc extends Model
 
     protected $fillable = [
         'flag_red',
+        'flag_orange',
         'flag_yellow',
         'flag_green'
     ];

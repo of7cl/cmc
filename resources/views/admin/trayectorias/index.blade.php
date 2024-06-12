@@ -1,21 +1,18 @@
 @extends('adminlte::page')
 
-@section('title', 'Control Documentos')
+@section('title', 'Control de Trayectoria')
 
-{{-- @section('content_header')
-    <h1>Control de Documentos</h1>
-@stop --}}
+@section('content_header')
+    <h1>Control de Trayectoria</h1>
+@stop
 
 @section('content')
     @if (session('info'))
         <div class="alert alert-success">
             <strong>{{ session('info') }}</strong>
         </div>
-    @endif
-    {{-- @livewire('admin.control-documentos-index') --}}
-    @livewire('admin.control-docs')
-    {{-- <livewire:admin.control-docs lazy/> --}}
-
+    @endif    
+    @livewire('admin.control-trayectoria')
 @stop
 
 

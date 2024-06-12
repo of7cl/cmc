@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use App\Models\Ship;
 use App\Models\Rango;
 use App\Models\Documento;
+use App\Models\Trayectoria;
 
 class Persona extends Model
 {
@@ -34,7 +35,11 @@ class Persona extends Model
 
     // relacion muchos a muchos
     public function documento(){
-        return $this->belongsToMany(Documento::class)->withPivot(['persona_id', 'documento_id', 'rango_id', 'fc_inicio', 'fc_fin']);
+        return $this->belongsToMany(Documento::class)->withPivot(['persona_id', 'documento_id', 'rango_id', 'fc_inicio', 'fc_fin', 'estado','nm_archivo_guardado','nm_archivo_original']);
+    }
+
+    public function trayectoria(){
+        return $this->hasOne(Trayectoria::class);
     }
     
 }

@@ -29,4 +29,9 @@ class Rango extends Model
     public function documentos(){
         return $this->belongsToMany(Documento::class)->withPivot('obligatorio');
     }
+
+    // uno a muchos 
+    // public function cabecera_trayectoria(){
+    //     return $this->hasMany(CabeceraTrayectoria::class);
+    // }
 }

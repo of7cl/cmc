@@ -26,4 +26,9 @@ class Ship extends Model
     public function personas(){
         return $this->hasMany(Persona::class);
     }
+
+    // uno a muchos 
+    public function detalle_trayectoria(){
+        return $this->hasMany(DetalleTrayectoria::class);
+    }
 }

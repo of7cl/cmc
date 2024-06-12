@@ -20,6 +20,7 @@
                     <tr>
                         <th>ID</th>
                         <th>Flag Rojo</th>
+                        <th>Flag Naranjo</th>
                         <th>Flag Amarillo</th>
                         <th>Flag Verde</th>                        
                         <th colspan="3"></th>
@@ -30,6 +31,7 @@
                         <tr>
                             <td>{{$parameterdoc->id}}</td>
                             <td>{{$parameterdoc->flag_red}} Días</td>
+                            <td>{{$parameterdoc->flag_orange}} Días</td>
                             <td>{{$parameterdoc->flag_yellow}} Días</td>
                             <td>{{$parameterdoc->flag_green}} Días</td>                                                       
                             <td width="10px">

@@ -13,13 +13,10 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('parameter_docs', function (Blueprint $table) {
+        Schema::create('estados', function (Blueprint $table) {
             $table->id();
 
-            $table->unsignedBigInteger('flag_red');
-            $table->unsignedBigInteger('flag_orange');
-            $table->unsignedBigInteger('flag_yellow');
-            $table->unsignedBigInteger('flag_green');
+            $table->string('nombre');
 
             $table->timestamps();
         });
@@ -32,6 +29,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('parameter_docs');
+        Schema::dropIfExists('estados');
     }
 };

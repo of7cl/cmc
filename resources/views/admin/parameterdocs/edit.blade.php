@@ -24,6 +24,13 @@
                 @enderror
             </div>
             <div class="form-group">
+                {!! Form::label('flag_orange', 'Flag Naranjo (# Días)') !!}
+                {!! Form::text('flag_orange', null, ['class' => 'form-control', 'placeholder' => 'Ingrese parámetro para Flag Naranjo']) !!}
+                @error('flag_orange')
+                    <span class="text-danger">{{ $message }}</span>
+                @enderror
+            </div>
+            <div class="form-group">
                 {!! Form::label('flag_yellow', 'Flag Amarillo (# Días)') !!}
                 {!! Form::text('flag_yellow', null, ['class' => 'form-control', 'placeholder' => 'Ingrese parámetro para Flag Amarillo']) !!}
                 @error('flag_yellow')
