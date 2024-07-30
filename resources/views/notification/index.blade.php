@@ -9,7 +9,8 @@ use App\Models\Persona;
     <h1>Notificaciones</h1>
 @stop
 @section('content')
-    <div class="row">
+    @livewire('admin.notificaciones-index') 
+    {{-- <div class="row">
         <div class="col-md-12">
             @if (count($notifications) > 0)
                 <div class="card">
@@ -20,7 +21,7 @@ use App\Models\Persona;
                     <div class="card-body">
                         @foreach ($notifications as $notification)
                             <?php
-                            $persona = Persona::find($notification->codigo);
+                            //$persona = Persona::find($notification->codigo);
                             ?>
                             <div class="callout callout-{{ $notification->alert }}">
                                 <div class="row justify-content-between">
@@ -38,8 +39,7 @@ use App\Models\Persona;
                                             @endif
                                         </span>
                                     </div>
-                                    <div class="col-sm-6 col-md-6 col-lg-1">
-                                        {{-- <input type="button" class="btn btn-success btn-xs" href="{{ route('admin.personas.show', $persona) }}" value="Revisar"/> --}}
+                                    <div class="col-sm-6 col-md-6 col-lg-1">                                        
                                         <a href="{{ route('admin.personas.show', $persona) }}" class="badge badge-success" role="button" style="text-decoration: none;">Revisar</a>
                                     </div>
                                 </div>
@@ -56,5 +56,44 @@ use App\Models\Persona;
                 </div>
             @endif
         </div>
-    </div>
+    </div> --}}
+@endsection
+
+@section('js')
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>    
+    <script>
+        Livewire.on('alert_upd_doc', function(message) {
+            Swal.fire({
+                //title: "OK!",
+                text: message,
+                icon: "success",
+                showConfirmButton: true
+            });                        
+            $('#modalEditDocPersona').modal('hide')          
+        })      
+        
+        Livewire.on('confirmEdit', PersonaId => {
+            
+            Swal.fire({
+                title: "No has ingresado documento. ¿Deseas continuar?",
+                text: "",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#3085d6",
+                cancelButtonColor: "#d33",
+                confirmButtonText: "¡Si, Editar!",
+                cancelButtonText: "Cancelar"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    Livewire.emit('update_doc', 1);
+                        /* Swal.fire({
+                        title: "Eliminada!",
+                        text: "Persona ha sido eliminada con exito.",
+                        icon: "success"
+                        }); */
+                    //this.submit();
+                }
+            });
+        })
+    </script>
 @endsection

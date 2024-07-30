@@ -12,10 +12,10 @@ class UserController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('can:administracion.users.index')->only('index');
-        $this->middleware('can:administracion.users.edit')->only('edit','update');
+        //$this->middleware('can:administracion.users.index')->only('index');
+        //$this->middleware('can:administracion.users.edit')->only('edit', 'update');
     }
-    
+
     /**
      * Display a listing of the resource.
      *
@@ -34,7 +34,8 @@ class UserController extends Controller
      */
     public function create()
     {
-        return view('admin.users.create');
+        $roles = Role::all();
+        return view('admin.users.create', compact('roles'));
     }
 
     /**
@@ -48,15 +49,17 @@ class UserController extends Controller
         $request->validate([
             'name'      =>  'required',
             'email'     =>  'required|email|unique:users',
-            'password'  =>  'required'
+            'password'  =>  'required|confirmed|min:8',
+            'password_confirmation' => 'required'
         ]);
-        
+
         /* $user = User::create($request->all()); */
         $user = User::create([
-                    'name' => $request['name'],
-                    'email' => $request['email'],
-                    'password' => Hash::make($request['password']),
-                ]);
+            'name' => $request['name'],
+            'email' => $request['email'],
+            'password' => Hash::make($request['password']),
+        ]);
+        $user->roles()->sync($request->roles);
         return redirect()->route('admin.users.edit', $user)->with('info', 'Usuario agregado con éxito!');
     }
 
@@ -78,9 +81,15 @@ class UserController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function edit(User $user)
-    {        
+    {    
         $roles = Role::all();
         return view('admin.users.edit', compact('user', 'roles'));
+    }
+
+    public function change_pass(User $user)
+    {
+        $roles = Role::all();
+        return view('admin.users.change_password', compact('user', 'roles'));
     }
 
     /**
@@ -91,18 +100,30 @@ class UserController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, User $user)
-    {
-        /* $request->validate([
-            'name'      =>  'required',
-            'email'     =>  "required|email|unique:users,email,$user->id",
-            'password'  =>  'required'
-        ]);
-        $user->update($request->all());
-
-        return redirect()->route('admin.users.edit', $user)->with('info', 'Usuario actualizado con éxito!'); */
-
-        $user->roles()->sync($request->roles);
-        return redirect()->route('admin.users.edit', $user)->with('info', 'Se asignó los roles con éxito!');
+    {        
+        if($request->change_pass == '1') //cambiar contraseña
+        {
+            $request->validate([
+                'password'  =>  'required|confirmed|min:8',
+                'password_confirmation' => 'required'
+            ]);
+            $user->update(['password' => Hash::make($request['password'])]);                                
+            $message = 'Contraseña actualizada con éxito!';
+        }
+        else{
+            $request->validate([
+                'name'      =>  'required',
+                'email'     =>  "required|email|unique:users,email,$user->id"
+            ]);
+            $user->update($request->all());
+    
+            /*return redirect()->route('admin.users.edit', $user)->with('info', 'Usuario actualizado con éxito!'); */
+    
+            $user->roles()->sync($request->roles);
+            $message = 'Usuario actualizado con éxito!';
+        }
+        
+        return redirect()->route('admin.users.edit', $user)->with('info', $message);
     }
 
     /**

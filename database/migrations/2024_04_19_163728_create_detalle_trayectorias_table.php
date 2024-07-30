@@ -21,13 +21,13 @@ return new class extends Migration
             $table->unsignedBigInteger('estado_id')->nullable();
             $table->date('fc_desde')->nullable();
             $table->date('fc_hasta')->nullable();
-            $table->unsignedBigInteger('total_dias_calendario')->nullable();
-            $table->unsignedBigInteger('descanso_convenio')->nullable();
-            $table->unsignedBigInteger('saldo_descanso')->nullable();
-            $table->unsignedBigInteger('dias_vacaciones_consumidas')->nullable();
-            $table->unsignedBigInteger('dias_inhabiles_generados')->nullable();
-            $table->unsignedBigInteger('dias_inhabiles_favor')->nullable();
-            $table->unsignedBigInteger('dias_inhabiles_consumidos')->nullable();
+            $table->integer('total_dias_calendario')->nullable();
+            $table->integer('descanso_convenio')->nullable();
+            $table->integer('saldo_descanso')->nullable();
+            $table->integer('dias_vacaciones_consumidas')->nullable();
+            $table->integer('dias_inhabiles_generados')->nullable();
+            $table->integer('dias_inhabiles_favor')->nullable();
+            $table->integer('dias_inhabiles_consumidos')->nullable();
             $table->string('ajuste')->nullable();
             $table->string('observaciones')->nullable();
 

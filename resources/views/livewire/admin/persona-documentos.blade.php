@@ -12,10 +12,11 @@
     $flag_orange = $parameters[0]['flag_orange'];
     $flag_yellow = $parameters[0]['flag_yellow'];
     $flag_green = $parameters[0]['flag_green'];
+    $docs_persona = [];
     
     ?>
     <div class="card">
-        @if ($rango_documentos)
+        @if ($rango_documentos->count() || $persona->documento->count())
             <div class="card-body table-responsive" style="max-height: 780px; padding:0%;">
 
                 {{-- {{$rango_documentos}} --}}
@@ -36,34 +37,29 @@
                         </tr>
                     </thead>
                     <tbody>
+                        {{-- documentos por rango --}}
                         @foreach ($rango_documentos as $rango_documento)
                             <tr>
                                 <form>
-                                    <td class="align-middle text-center">
-                                        {{ $rango_documento->id }}
-                                    </td>
+                                    <td class="align-middle text-center">{{ $rango_documento->id }}</td>
                                     <td class="align-middle text-center">{{ $rango_documento->nr_documento }}</td>
                                     <td class="align-middle text-center">{{ $rango_documento->codigo_omi }}</td>
                                     <td>{{ $rango_documento->nombre }}</td>
-                                    {{-- <td class="align-middle text-center">
-                                        @if ($rango_documento->pivot->obligatorio == 1)
-                                            Si
-                                        @else
-                                            No
-                                        @endif
-                                    </td> --}}
                                     <td class="align-middle text-center">
-                                        <?php $fc_fin = null; ?>
-                                        <?php $estado = false; ?>
+                                        <?php $fc_fin = null;
+                                        $estado = false;
+                                        $archivo_guardado = null; ?>
                                         @foreach ($persona->documento as $documento)
                                             @if ($documento->pivot->documento_id == $rango_documento->id)
                                                 <?php
+                                                array_push($docs_persona, $documento);
                                                 if ($documento->pivot->fc_fin) {
                                                     $fc_fin = $documento->pivot->fc_fin;
                                                     $diff = $fecha->diffFechaActual($fc_fin);
                                                     $fc_fin = $fecha->formatodmY($fc_fin);
                                                 }
                                                 $estado = $documento->pivot->estado;
+                                                $semaforo = $documento->pivot->semaforo;
                                                 $archivo_guardado = $documento->pivot->nm_archivo_guardado;
                                                 ?>
                                             @endif
@@ -71,11 +67,14 @@
                                         {{-- {{ Form::text('fc_fin' . $rango_documento->id, $fc_fin, ['class' => 'form-control', 'style' => 'width:110px; border-left-color: red; border-left-width: thick;', 'disabled']) }} --}}
                                         @if ($estado == 0)
                                             @if ($fc_fin != null)
-                                                @if ($diff <= $flag_red)
+                                                {{-- @if ($diff <= $flag_red) --}}
+                                                @if ($semaforo == "2")
                                                     {{ Form::text('fc_fin' . $rango_documento->id, $fc_fin, ['class' => 'form-control', 'style' => 'width:110px; border-left-color: red; border-left-width: thick;', 'disabled']) }}
-                                                @elseif($diff > $flag_red && $diff < $flag_orange)
+                                                {{-- @elseif($diff > $flag_red && $diff < $flag_orange) --}}
+                                                @elseif ($semaforo == "3")
                                                     {{ Form::text('fc_fin' . $rango_documento->id, $fc_fin, ['class' => 'form-control', 'style' => 'width:110px; border-left-color: orange; border-left-width: thick;', 'disabled']) }}
-                                                @elseif($diff > $flag_orange && $diff < $flag_yellow)
+                                                {{-- @elseif($diff > $flag_orange && $diff < $flag_yellow) --}}
+                                                @elseif ($semaforo == "4")
                                                     {{ Form::text('fc_fin' . $rango_documento->id, $fc_fin, ['class' => 'form-control', 'style' => 'width:110px; border-left-color: yellow; border-left-width: thick;', 'disabled']) }}
                                                 @else
                                                     {{ Form::text('fc_fin' . $rango_documento->id, $fc_fin, ['class' => 'form-control', 'style' => 'width:110px; border-left-color: green; border-left-width: thick;', 'disabled']) }}
@@ -114,9 +113,189 @@
                                 </form>
                             </tr>
                         @endforeach
+                        {{-- documentos asociados al tipo de nave por rango --}}
+                        {{-- se deben mostrar solo los documentos que no se encontraban asociados al rango --}}
+                        {{-- valida si persona tiene documentos ingresados --}}
+                        {{-- @if ($persona->ship->ship_tipo->documentos->count()) --}}
+                        {{-- recorre todos los documentos asociados al tipo de nave --}}
+                        @if ($persona->ship_id)
+                            @if ($persona->ship->ship_tipo)
+                                @foreach ($persona->ship->ship_tipo->documentos as $docsTipoNave)
+                                    <?php $cn = 0; ?>
+                                    {{-- valida si el documento corresponde al rango de la persona --}}
+                                    @if ($docsTipoNave->pivot->rango_id == $persona->rango_id)
+                                        {{-- recorre los documentos asociados al rango y valida que no se repita en los asociados al tipo de nave --}}
+                                        @foreach ($rango_documentos as $rango_documento)
+                                            @if ($docsTipoNave->id == $rango_documento->id)
+                                                <?php $cn++; ?>
+                                            @endif
+                                        @endforeach
+                                        @if ($cn == 0)
+                                            <tr>
+                                                <form>
+                                                    <td class="align-middle text-center">{{ $docsTipoNave->id }}</td>
+                                                    <td class="align-middle text-center">
+                                                        {{ $docsTipoNave->nr_documento }}
+                                                    </td>
+                                                    <td class="align-middle text-center">
+                                                        {{ $docsTipoNave->codigo_omi }}
+                                                    </td>
+                                                    <td>{{ $docsTipoNave->nombre }}</td>
+                                                    <td class="align-middle text-center">
+                                                        <?php $fc_fin = null;
+                                                        $estado = false;
+                                                        $archivo_guardado = null; ?>
+                                                        @foreach ($persona->documento as $documento)
+                                                            @if ($documento->pivot->documento_id == $docsTipoNave->id)
+                                                                <?php
+                                                                array_push($docs_persona, $documento);
+                                                                if ($documento->pivot->fc_fin) {
+                                                                    $fc_fin = $documento->pivot->fc_fin;
+                                                                    //$diff = $fecha->diffFechaActual($fc_fin);
+                                                                    $fc_fin = $fecha->formatodmY($fc_fin);
+                                                                }
+                                                                $estado = $documento->pivot->estado;
+                                                                $semaforo = $documento->pivot->semaforo;
+                                                                $archivo_guardado = $documento->pivot->nm_archivo_guardado;
+                                                                ?>
+                                                            @endif
+                                                        @endforeach
+                                                        <?php echo $semaforo; ?>
+                                                        @if ($estado == 0)
+                                                            @if ($fc_fin != null)
+                                                                {{-- @if ($diff <= $flag_red) --}}
+                                                                @if ($semaforo == "2")
+                                                                    {{ Form::text('fc_fin' . $docsTipoNave->id, $fc_fin, ['class' => 'form-control', 'style' => 'width:110px; border-left-color: red; border-left-width: thick;', 'disabled']) }}
+                                                                {{-- @elseif($diff > $flag_red && $diff < $flag_orange) --}}
+                                                                @elseif ($semaforo == "3")
+                                                                    {{ Form::text('fc_fin' . $docsTipoNave->id, $fc_fin, ['class' => 'form-control', 'style' => 'width:110px; border-left-color: orange; border-left-width: thick;', 'disabled']) }}
+                                                                {{-- @elseif($diff > $flag_orange && $diff < $flag_yellow) --}}
+                                                                @elseif ($semaforo == "4")
+                                                                    {{ Form::text('fc_fin' . $docsTipoNave->id, $fc_fin, ['class' => 'form-control', 'style' => 'width:110px; border-left-color: yellow; border-left-width: thick;', 'disabled']) }}
+                                                                @else
+                                                                    {{ Form::text('fc_fin' . $docsTipoNave->id, $fc_fin, ['class' => 'form-control', 'style' => 'width:110px; border-left-color: green; border-left-width: thick;', 'disabled']) }}
+                                                                @endif
+                                                            @else
+                                                                --
+                                                            @endif
+                                                        @else
+                                                            @if ($fc_fin != null)
+                                                                {{ Form::text('fc_fin' . $docsTipoNave->id, $fc_fin, ['class' => 'form-control', 'style' => 'width:110px; border-left-color: black; border-left-width: thick;', 'disabled']) }}
+                                                            @else
+                                                                --
+                                                            @endif
+                                                        @endif
+                                                    </td>
+                                                    <td class="align-middle text-center">
+                                                        @if ($archivo_guardado)
+                                                            Si
+                                                        @else
+                                                            No
+                                                        @endif
+                                                    </td>
+                                                    <td class="align-middle text-center">
+                                                        @if ($estado == 0)
+                                                            No
+                                                        @else
+                                                            Si
+                                                        @endif
+                                                    </td>
+                                                    <td class="align-middle text-center">
+                                                        <input wire:click="edit({{ $docsTipoNave->id }})"
+                                                            type="button" value="Editar" class="btn btn-primary btn-sm"
+                                                            data-toggle="modal" data-target="#modalEditDocPersona"
+                                                            data-backdrop="static" data-keyboard="false">
+                                                    </td>
+                                                </form>
+                                            </tr>
+                                        @endif
+                                    @endif
+                                @endforeach
+                            @endif
+                        @endif
+                        {{-- @endif --}}
+                        {{-- documentos de la persona no asociados al rango (cambio de rango mantiene documentos de la persona) --}}
+                        @foreach ($persona->documento as $documento)
+                            <?php $cn = 0; ?>
+                            @if ($docs_persona)
+                                @foreach ($docs_persona as $doc_persona)
+                                    @if ($doc_persona->pivot->documento_id == $documento->id)
+                                        <?php $cn++; ?>
+                                    @endif
+                                @endforeach
+                            @endif
+                            @if ($cn == 0)
+                                <tr>
+                                    <form>
+                                        <td class="align-middle text-center">{{ $documento->id }}</td>
+                                        <td class="align-middle text-center">{{ $documento->nr_documento }}</td>
+                                        <td class="align-middle text-center">{{ $documento->codigo_omi }}</td>
+                                        <td>{{ $documento->nombre }}</td>
+                                        <td class="align-middle text-center">
+                                            <?php $fc_fin = null;
+                                            $estado = false;
+                                            $archivo_guardado = null;
+                                            if ($documento->pivot->fc_fin) {
+                                                $fc_fin = $documento->pivot->fc_fin;
+                                                $diff = $fecha->diffFechaActual($fc_fin);
+                                                $fc_fin = $fecha->formatodmY($fc_fin);
+                                            }
+                                            $estado = $documento->pivot->estado;
+                                            $semaforo = $documento->pivot->semaforo;
+                                            $archivo_guardado = $documento->pivot->nm_archivo_guardado;
+                                            ?>
+                                            <?php echo $semaforo; ?>
+                                            @if ($estado == 0)
+                                                @if ($fc_fin != null)
+                                                    {{-- @if ($diff <= $flag_red) --}}                                                    
+                                                    @if($semaforo == '2')
+                                                        {{ Form::text('fc_fin' . $documento->id, $fc_fin, ['class' => 'form-control', 'style' => 'width:110px; border-left-color: red; border-left-width: thick;', 'disabled']) }}
+                                                    {{-- @elseif($diff > $flag_red && $diff < $flag_orange) --}}
+                                                    @elseif($semaforo == '3')
+                                                        {{ Form::text('fc_fin' . $documento->id, $fc_fin, ['class' => 'form-control', 'style' => 'width:110px; border-left-color: orange; border-left-width: thick;', 'disabled']) }}
+                                                    {{-- @elseif($diff > $flag_orange && $diff < $flag_yellow) --}}
+                                                    @elseif($semaforo == '4')
+                                                        {{ Form::text('fc_fin' . $documento->id, $fc_fin, ['class' => 'form-control', 'style' => 'width:110px; border-left-color: yellow; border-left-width: thick;', 'disabled']) }}
+                                                    @else
+                                                        {{ Form::text('fc_fin' . $documento->id, $fc_fin, ['class' => 'form-control', 'style' => 'width:110px; border-left-color: green; border-left-width: thick;', 'disabled']) }}
+                                                    @endif
+                                                @else
+                                                    --
+                                                @endif
+                                            @else
+                                                @if ($fc_fin != null)
+                                                    {{ Form::text('fc_fin' . $documento->id, $fc_fin, ['class' => 'form-control', 'style' => 'width:110px; border-left-color: black; border-left-width: thick;', 'disabled']) }}
+                                                @else
+                                                    --
+                                                @endif
+                                            @endif
+                                        </td>
+                                        <td class="align-middle text-center">
+                                            @if ($archivo_guardado)
+                                                Si
+                                            @else
+                                                No
+                                            @endif
+                                        </td>
+                                        <td class="align-middle text-center">
+                                            @if ($estado == 0)
+                                                No
+                                            @else
+                                                Si
+                                            @endif
+                                        </td>
+                                        <td class="align-middle text-center">
+                                            <input wire:click="edit({{ $documento->id }})" type="button"
+                                                value="Editar" class="btn btn-primary btn-sm" data-toggle="modal"
+                                                data-target="#modalEditDocPersona" data-backdrop="static"
+                                                data-keyboard="false">
+                                        </td>
+                                    </form>
+                                </tr>
+                            @endif
+                        @endforeach
                     </tbody>
                 </table>
-
             </div>
         @else
             <div class="card-body">
@@ -124,7 +303,6 @@
             </div>
         @endif
     </div>
-
     <div>
         <form wire:submit.prevent="update">
             <div wire:ignore.self class="modal fade" id="modalEditDocPersona" tabindex="-1" role="dialog"

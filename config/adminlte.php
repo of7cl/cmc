@@ -1,5 +1,7 @@
 <?php
 
+use Illuminate\Support\Facades\Auth;
+
 return [
 
     /*
@@ -133,7 +135,7 @@ return [
     */
 
     'usermenu_enabled' => true,
-    'usermenu_header' => false,
+    'usermenu_header' => true,
     'usermenu_header_class' => 'bg-primary',
     'usermenu_image' => false,
     'usermenu_desc' => false,
@@ -306,7 +308,7 @@ return [
             'dropdown_flabel' => 'Todas las notificaciones', // The label for the dropdown footer link (optional).
             'update_cfg'   => [
                 'route' => 'notification.new',        // The url to periodically fetch new data (optional).
-                'period' => 10,                       // The update period for get new data (in seconds, optional).
+                'period' => 60,                       // The update period for get new data (in seconds, optional).
             ],
         ],
         [
@@ -329,8 +331,10 @@ return [
         ],
         [
             'text' => 'Programación de Embarcos',
-            'url'  => '#',
+            //'route'  => 'admin.programacion_embarcos.index',            
+            'url' => '',
             'icon' => 'fas fa-fw fa-anchor',
+            'active'    => ['admin/programacion_embarcos*'],
             'can'  => 'programacion-embarcos.index',
         ],
         [
@@ -380,6 +384,18 @@ return [
                     'route'     => 'admin.parameterdocs.index',
                     'active'    => ['admin/parameterdocs*'],
                     'can'       => 'mantencion.parameterdocs.index',
+                ],
+                [
+                    'text'      => 'Tipos de Nave',                    
+                    'route'     => 'admin.ship_tipos.index',
+                    'active'    => ['admin/ship_tipos*'],
+                    'can'       => 'mantencion.ship_tipos.index',
+                ],
+                [
+                    'text'      => 'Feriados',                    
+                    'route'     => 'admin.feriados.index',
+                    'active'    => ['admin/feriados*'],
+                    'can'       => 'mantencion.feriados.index',
                 ]
             ]            
         ],
@@ -391,11 +407,11 @@ return [
                 [
                     'text'      => 'Usuarios Sistema',
                     'route'       => 'admin.users.index',
-                    'active'    => ['admin/users*'],
+                    'active'    => ['admin/users*', 'admin/change_password*'],
                     'can'       => 'administracion.users.index'
                 ]
             ]            
-        ],        
+        ],             
     ],
 
     /*

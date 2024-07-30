@@ -15,6 +15,15 @@ class DetalleTrayectoria extends Model
         'estado_id',
         'fc_desde',
         'fc_hasta',
+        'total_dias_calendario',
+        'descanso_convenio',
+        'saldo_descanso',
+        'dias_vacaciones_consumidas',
+        'dias_inhabiles_generados',
+        'dias_inhabiles_favor',
+        'dias_inhabiles_consumidos',
+        'ajuste',
+        'observaciones'
     ];
 
     // uno a muchos inversa

@@ -3,7 +3,9 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\ContratoTipo;
 use App\Models\Documento;
+use App\Models\Notification;
 use Illuminate\Http\Request;
 use App\Models\Persona;
 use App\Models\Rango;
@@ -42,9 +44,10 @@ class PersonaController extends Controller
     {
         $rangos = Rango::where('estado', 1)->pluck('nombre', 'id');
         $ships = Ship::where('estado', 1)->pluck('nombre', 'id');
+        $contrato_tipos = ContratoTipo::get()->pluck('name', 'id');        
 
         /* return view('admin.personas.create', compact('rangos'), compact('ships')); */
-        return view('admin.personas.create', compact('rangos', 'ships'));
+        return view('admin.personas.create', compact('rangos', 'ships', 'contrato_tipos'));
     }
 
     /**
@@ -54,11 +57,17 @@ class PersonaController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
-    {
+    {        
         $request->validate([
             'nombre'    =>  'required',
-            'rut'     => 'required|unique:personas'
+            'rut'     => 'required|unique:personas',
+            'file' => 'image|max:1024'
         ]);
+
+        if($request->file('file')){
+            $url = Storage::put('foto_perfil', $request->file('file'));
+        }else
+            $url = null;
 
         $persona = Persona::create([
             'nombre' => $request['nombre'],
@@ -68,11 +77,13 @@ class PersonaController extends Controller
             'fc_nacimiento' => $request['fc_nacimiento'],
             'fc_ingreso' => $request['fc_ingreso'],
             'fc_baja' => $request['fc_baja'],
+            'foto' => $url,
+            'contrato_tipo_id' => $request['contrato_tipo_id']
         ]);
 
         $trayectoria = Trayectoria::create([
             'persona_id' => $persona->id
-        ]);
+        ]);        
 
         return redirect()->route('admin.personas.edit', compact('persona'))->with('info', 'Persona creada con éxito!');
     }
@@ -86,10 +97,13 @@ class PersonaController extends Controller
     public function show(Request $request, Persona $persona)
     {
         $rango = Rango::where('id', $persona->rango_id)->first();
-        if ($rango)
-            $rango_documentos = $rango->documentos;
+        if ($rango){
+            $rango_documentos = $rango->documentos;                        
+        }
         else
-            $rango_documentos = null;
+        {            
+            $rango_documentos = null;                                    
+        }
         return view('admin.personas.show', compact('persona', 'rango_documentos'));
     }
 
@@ -103,8 +117,9 @@ class PersonaController extends Controller
     {
         $rangos = Rango::where('estado', 1)->pluck('nombre', 'id');
         $ships = Ship::where('estado', 1)->pluck('nombre', 'id');
+        $contrato_tipos = ContratoTipo::get()->pluck('name', 'id');        
         /* return view('admin.personas.edit', compact('persona'), compact('ships'), compact('rangos')); */
-        return view('admin.personas.edit', compact('persona', 'ships', 'rangos'));
+        return view('admin.personas.edit', compact('persona', 'ships', 'rangos', 'contrato_tipos'));
     }
 
     /**
@@ -117,6 +132,7 @@ class PersonaController extends Controller
     public function update(Request $request, Persona $persona)
     {        
         if ($request->opcion == 'upd_doc') {
+            
             $campos = $request;
 
             $fc_inicio = $campos['fc_inicio' . $request->documento_id];
@@ -197,14 +213,11 @@ class PersonaController extends Controller
 
             return redirect()->route('admin.personas.show', compact('persona', 'rango_documentos'))->with('info', 'Documento actualizado con éxito!');
         } else {
-
-            $rangos = Rango::where('estado', 1)->pluck('nombre', 'id');
-            $ships = Ship::where('estado', 1)->pluck('nombre', 'id');
-
+            //return $request->file('file_upd');            
             $request->validate([
                 'nombre'    =>  'required',
-                'rut'     => "required|unique:personas,rut,$persona->id"
-
+                'file_upd' => 'image|max:1024',
+                'rut'     => "required|unique:personas,rut,$persona->id"              
             ]);
 
             if ($request->estado) {
@@ -213,6 +226,26 @@ class PersonaController extends Controller
                 $estado = 2;
             }
 
+            // si viene fecha de baja, persona debe quedar inactiva
+            if($request['fc_baja'])
+            {
+                $estado = 2;
+            }
+
+            if($request->file('file_upd')){
+                $url = Storage::put('foto_perfil', $request->file('file_upd'));
+
+                if($persona->foto){
+                    Storage::delete($persona->foto);
+                }
+            }else{
+                if($persona->foto){
+                    $url = $persona->foto;
+                }else{
+                    $url = null;
+                }
+            }
+                
 
             $update = Persona::query()
                 ->where('id', $persona->id)
@@ -224,15 +257,19 @@ class PersonaController extends Controller
                     'fc_nacimiento' => $request['fc_nacimiento'],
                     'fc_ingreso' => $request['fc_ingreso'],
                     'fc_baja' => $request['fc_baja'],
-                    'estado' => $estado
+                    'estado' => $estado,
+                    'foto' => $url,
+                    'contrato_tipo_id' => $request['contrato_tipo_id']
 
                 ]);
 
-            if ($request->rango_id != $persona->rango_id) {
+            // eliminar documentos persona
+            /* if ($request->rango_id != $persona->rango_id) {
                 $persona->documento()->detach($persona->documento);
-            }
-
-            return redirect()->route('admin.personas.edit', compact('persona', 'rangos', 'ships'))->with('info', 'Persona editada con éxito!');
+            } */
+            /* $rangos = Rango::where('estado', 1)->pluck('nombre', 'id');
+            $ships = Ship::where('estado', 1)->pluck('nombre', 'id'); */
+            return redirect()->route('admin.personas.edit', compact('persona'))->with('info', 'Persona editada con éxito!');
         }
     }
 
@@ -244,7 +281,8 @@ class PersonaController extends Controller
      */
     public function destroy(Persona $persona)
     {
-        $persona->delete();
+        //$persona->delete();
+        //$notificaciones = Notification::where('codigo', $persona->id)->delete();
         return redirect()->route('admin.personas.index')->with('info', 'Persona eliminada con éxito!');
     }
 }

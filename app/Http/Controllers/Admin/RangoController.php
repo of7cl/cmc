@@ -78,7 +78,8 @@ class RangoController extends Controller
         return $rango_documentos; */
         //return $rango->documentos;
         //return $rango;
-        return view('admin.rangos.show', compact('rango'));
+        $documentos = Documento::where('estado', 1)->get();
+        return view('admin.rangos.show', compact('rango', 'documentos'));
     }
 
      /**
@@ -118,8 +119,10 @@ class RangoController extends Controller
         //return $request;
         
         if ($request->opcion == 'docs') {   
+
+            //dd($request->documentos);
             
-            $request->validate([
+            /* $request->validate([
                 'documento'    =>  "required",                
             ]);        
             
@@ -138,9 +141,11 @@ class RangoController extends Controller
                 array_push($docs, $rango_documento->id);
             }            
 
-            $rango->documentos()->sync( $docs );
+            $rango->documentos()->sync( $docs ); */
 
-            return redirect()->route('admin.rangos.show', compact('rango'))->with('info', 'Documento asignado con éxito!');
+            $rango->documentos()->sync( $request->documentos );
+
+            return redirect()->route('admin.rangos.show', compact('rango'))->with('info', 'Documentos asignados con éxito!');
             
         } elseif($request->opcion == 'del_doc'){
 

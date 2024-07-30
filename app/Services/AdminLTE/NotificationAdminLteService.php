@@ -17,7 +17,7 @@ class NotificationAdminLteService
 
         foreach ($notifications as $key => $notification) {
 
-            $persona = Persona::find($notification->codigo);
+            $persona = Persona::find($notification->persona_id);
 
             if ($key < 5) {
                 $text = Str::limit($notification->text, 15);
@@ -28,10 +28,16 @@ class NotificationAdminLteService
                     </span>";
 //$dropdown_html .= "<a class='dropdown-item text-sm callout callout-".$notification->alert."' style='margin-bottom: 0.1rem' href='#'>            
                 $href = "href='".route('admin.personas.show', $persona)."'";
-                $dropdown_html .= "<a class='dropdown-item text-sm callout callout-".$notification->alert."' style='margin-bottom: 0.1rem' ".$href.">            
+                if($notification->alert == 'red')                
+                    $dropdown_html .= "<a class='dropdown-item text-sm callout' style='border-left-color: red; border-left-width: thick; margin-bottom: 0.1rem;' ".$href.">{$icon}{$text}{$time}</a>";
+                else if($notification->alert == 'orange')                
+                    $dropdown_html .= "<a class='dropdown-item text-sm callout' style='border-left-color: orange; border-left-width: thick; margin-bottom: 0.1rem;' ".$href.">{$icon}{$text}{$time}</a>";
+                else if($notification->alert == 'yellow')                
+                    $dropdown_html .= "<a class='dropdown-item text-sm callout' style='border-left-color: yellow; border-left-width: thick; margin-bottom: 0.1rem;' ".$href.">{$icon}{$text}{$time}</a>";
+                else
+                    $dropdown_html .= "<a class='dropdown-item text-sm callout' style='border-left-color: white; border-left-width: thick; margin-bottom: 0.1rem;' ".$href.">{$icon}{$text}{$time}</a>";
                 
-                            {$icon}{$text}{$time}
-                            </a>";
+                //$dropdown_html .= "<a class='dropdown-item text-sm callout callout-".$notification->alert."' style='margin-bottom: 0.1rem' ".$href.">{$icon}{$text}{$time}</a>";
 
                 //if ($key < count($notifications) - 1) {
                 // $dropdown_html .= "<div class='dropdown-divider'></div>";

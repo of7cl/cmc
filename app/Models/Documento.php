@@ -25,4 +25,9 @@ class Documento extends Model
     public function rangos(){
         return $this->belongsToMany(Rango::class);
     }
+
+    // relacion muchos a muchos
+    public function ship_tipos(){
+        return $this->belongsToMany(ShipTipo::class);
+    }
 }

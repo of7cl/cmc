@@ -13,6 +13,16 @@
     @enderror
 </div>
 <div class="form-group">
+    {!! Form::label('ship_tipo_id', 'Tipo') !!}
+    {!! Form::select('ship_tipo_id', $ship_tipos, null, [
+        'class' => 'form-control',
+        'placeholder' => 'Seleccionar Tipo...',
+    ]) !!}
+    @error('ship_tipo_id')
+        <span class="text-danger">{{ $message }}</span>
+    @enderror
+</div>
+<div class="form-group">
     {!! Form::label('imo', 'IMO') !!}
     {!! Form::text('imo', null, ['class' => 'form-control', 'placeholder' => 'Ingrese IMO de nave']) !!}
     @error('imo')

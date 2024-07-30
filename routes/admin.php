@@ -1,14 +1,17 @@
 <?php
 
 use App\Http\Controllers\Admin\DocumentoController;
+use App\Http\Controllers\Admin\FeriadoController;
 use App\Http\Controllers\Admin\HomeController;
 use App\Http\Controllers\Admin\PersonaController;
 /* use App\Http\Controllers\Admin\NaveController; */
 use App\Http\Controllers\Admin\RangoController;
 use App\Http\Controllers\Admin\ShipController;
+use App\Http\Controllers\Admin\ShipTipoController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\CarbonController;
 use App\Http\Controllers\Admin\ParameterDocController;
+use App\Http\Controllers\Admin\ProgramacionEmbarcosController;
 use App\Http\Controllers\Admin\TrayectoriaController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Livewire\Admin\ControlTrayectoriaShow;
@@ -22,18 +25,27 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
 
 //Auth::routes();
 
+Route::get('storage-link', function(){
+    Artisan::call('storage:link');
+});
+
 Route::get('', [HomeController::class, 'index']);
 Route::resource('users', UserController::class)->names('admin.users');
+Route::get('change_password/{user}', [UserController::class, 'change_pass'])->name('admin.users.change_password');
 Route::resource('rangos', RangoController::class)->names('admin.rangos');
 Route::resource('ships', ShipController::class)->names('admin.ships');
+Route::resource('ship_tipos', ShipTipoController::class)->names('admin.ship_tipos');
 Route::resource('personas', PersonaController::class)->names('admin.personas');
 Route::resource('documentos', DocumentoController::class)->names('admin.documentos');
 Route::resource('parameterdocs', ParameterDocController::class)->names('admin.parameterdocs');
 Route::resource('trayectorias', TrayectoriaController::class)->names('admin.trayectorias');
+Route::resource('programacion_embarcos', ProgramacionEmbarcosController::class)->names('admin.programacion_embarcos');
+Route::resource('feriados', FeriadoController::class)->names('admin.feriados');
 
 Route::get('rangos/{rango}/asignar-documento', function (Rango $rango){
     $documentos = Documento::select(

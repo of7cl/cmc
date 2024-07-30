@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Ship;
+use App\Models\ShipTipo;
 use Illuminate\Http\Request;
 
 class ShipController extends Controller
@@ -23,7 +24,8 @@ class ShipController extends Controller
      */
     public function index()
     {
-        $ships = Ship::where('estado', 1)->get();
+        $ships = Ship::where('estado', 1)->get();        
+        //dd($ships);
         return view('admin.ships.index', compact('ships'));  
     }
 
@@ -33,8 +35,9 @@ class ShipController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function create()
-    {
-        return view('admin.ships.create');
+    {        
+        $ship_tipos = ShipTipo::pluck('nombre', 'id');
+        return view('admin.ships.create', compact('ship_tipos'));
     }
 
     /**
@@ -47,7 +50,8 @@ class ShipController extends Controller
     {
         $request->validate([
             'codigo'    =>  'required|unique:naves',
-            'nombre'     => 'required',            
+            'nombre'     => 'required',  
+            'ship_tipo_id' => 'required',
             'imo'     => 'required',
             'dwt'     => 'required',
             'trg'     => 'required',
@@ -58,6 +62,7 @@ class ShipController extends Controller
         $ship = Ship::create([
                     'codigo' => $request['codigo'],
                     'nombre' => $request['nombre'],
+                    'ship_tipo_id' => $request['ship_tipo_id'],
                     'imo' => $request['imo'],
                     'dwt' => $request['dwt'],
                     'trg' => $request['trg'],
@@ -66,7 +71,7 @@ class ShipController extends Controller
                     'descripcion' => "descripción de prueba",                    
                 ]);
         
-        return redirect()->route('admin.ships.edit', compact('ship'))->with('info', 'Nave creada con éxito!');;
+        return redirect()->route('admin.ships.edit', compact('ship'))->with('info', 'Nave creada con éxito!');
     }
 
     /**
@@ -88,7 +93,8 @@ class ShipController extends Controller
      */
     public function edit(Ship $ship)
     {
-        return view('admin.ships.edit', compact('ship'));        
+        $ship_tipos = ShipTipo::pluck('nombre', 'id');
+        return view('admin.ships.edit', compact('ship', 'ship_tipos'));        
     }
 
     /**
@@ -102,7 +108,8 @@ class ShipController extends Controller
     {
         $request->validate([
             'codigo'    =>  'required|unique:naves',
-            'nombre'     => 'required',            
+            'nombre'     => 'required', 
+            'ship_tipo_id' => 'required',           
             'imo'     => 'required',
             'dwt'     => 'required',
             'trg'     => 'required',
@@ -110,16 +117,24 @@ class ShipController extends Controller
             'manga'     => 'required'            
         ]);        
         
+        if ($request->estado) {
+            $estado = 1;
+        } else {
+            $estado = 2;
+        }
+
         Ship::query()
             ->where('id', $ship->id)
             ->update([
                 'codigo' => $request['codigo'],
                 'nombre' => $request['nombre'],
+                'ship_tipo_id' => $request['ship_tipo_id'],
                 'imo' => $request['imo'],
                 'dwt' => $request['dwt'],
                 'trg' => $request['trg'],
                 'loa' => $request['loa'],
                 'manga' => $request['manga'],
+                'estado' => $estado
                 /* 'descripcion' => "descripción de prueba", */
         ]);
         return redirect()->route('admin.ships.edit', compact('ship'))->with('info', 'Nave editada con éxito!'); 

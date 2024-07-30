@@ -21,6 +21,6 @@ class Notification extends Model
         'updated_at' => 'datetime',
     ];
 
-    public $fillable = ['icon', 'text', 'readed', 'alert', 'codigo'];
+    public $fillable = ['icon', 'text', 'readed', 'alert', 'persona_id', 'documento_id', 'semaforo'];
     
 }

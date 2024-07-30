@@ -24,8 +24,11 @@ return new class extends Migration
             $table->string('loa');
             $table->string('manga');
             $table->string('descripcion')->nullable();
+            $table->unsignedBigInteger('ship_tipo_id')->nullable();                        
 
-            $table->enum('estado', [1,2])->default(1); // 1 => activo, 2=> inactivo
+            $table->enum('estado', [1,2])->default(1); // 1 => activo, 2=> inactivo            
+
+            $table->foreign('ship_tipo_id')->references('id')->on('ship_tipos')->onDelete('set null');;            
 
             $table->timestamps();
         });

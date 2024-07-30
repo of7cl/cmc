@@ -21,14 +21,17 @@ return new class extends Migration
             $table->date('fc_nacimiento')->nullable();
             $table->date('fc_ingreso')->nullable();
             $table->date('fc_baja')->nullable();
+            $table->string('foto')->nullable();
 
             $table->enum('estado', [1,2])->default(1); // 1 => activo, 2=> inactivo
             
             $table->unsignedBigInteger('ship_id')->nullable();            
             $table->unsignedBigInteger('rango_id')->nullable();
+            $table->unsignedBigInteger('contrato_tipo_id')->nullable();
 
             $table->foreign('ship_id')->references('id')->on('ships')->onDelete('set null');;
             $table->foreign('rango_id')->references('id')->on('rangos')->onDelete('set null');;
+            $table->foreign('contrato_tipo_id')->references('id')->on('contrato_tipos')->onDelete('set null');;
 
             $table->timestamps();
         });

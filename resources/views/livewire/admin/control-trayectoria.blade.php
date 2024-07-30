@@ -33,7 +33,7 @@
     
     @if ($personas->count())            
         <div class="card-body table-responsive">
-            <table class="table table-striped">
+            <table class="table table-sm table-hover">
                 <thead>
                     <tr>                        
                         <th>ID</th>
@@ -41,16 +41,19 @@
                         <th>RUT</th>
                         <th>Rango</th>
                         <th>Nave</th>
+                        <th>Contrato</th>
                         <th>Fecha Nacimiento</th>
                         <th>Fecha Ingreso</th>
                         {{-- <th>Fecha Baja</th> --}}
                         
-                        <th colspan="3"></th>
+                        {{-- <th colspan="3"></th> --}}
                     </tr>
                 </thead>
                 <tbody>                    
                     @foreach ($personas as $persona)
-                        <tr>
+                        <tr onclick="window.location='{{ route('admin.trayectorias.show', $persona->id) }}'" 
+                            title="Ver control de trayectoria"
+                            style="cursor: pointer;">                            
                             <td>{{$persona->id}}</td>
                             <td>{{$persona->nombre}}</td>
                             <td>{{$persona->rut}}</td>                            
@@ -62,6 +65,11 @@
                             <td>
                                 @if ($persona->ship_id)
                                     {{$persona->ship->nombre}}
+                                @endif                                
+                            </td>
+                            <td>
+                                @if ($persona->contrato_tipo_id)
+                                    {{$persona->contratoTipo->name}}
                                 @endif                                
                             </td>
                             <td>
@@ -79,9 +87,9 @@
                                     {{date('d-m-Y', strtotime($persona->fc_baja))}}
                                 @endif                                
                             </td>                                                        --}}
-                            <td width="10px">
+                            {{-- <td width="10px">
                                 <a class="btn btn-success btn-sm" href="{{route('admin.trayectorias.show', $persona->id)}}">Ver</a>
-                            </td>                            
+                            </td>  --}}                           
                         </tr>
                     @endforeach
                 </tbody>

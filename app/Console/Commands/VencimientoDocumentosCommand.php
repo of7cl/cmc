@@ -40,7 +40,9 @@ class VencimientoDocumentosCommand extends Command
                 'icon'=> $documentoVencido['icon'],
                 'text'=> $documentoVencido['text'],
                 'alert' => $documentoVencido['alert'],
-                'codigo' => $documentoVencido['codigo']
+                'persona_id' => $documentoVencido['persona_id'],
+                'documento_id' => $documentoVencido['documento_id'],
+                'semaforo' => $documentoVencido['semaforo']
             ]);
         }                
     }

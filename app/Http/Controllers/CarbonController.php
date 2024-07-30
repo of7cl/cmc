@@ -19,7 +19,16 @@ class CarbonController extends Controller
         $now = Carbon::now()->timeZone('America/Santiago');
         $diff = $now->diffInDays($fc_fin, false);
         return $diff;
-    }   
+    } 
+    
+    public function diffEntreFechas($fc_ini, $fc_fin)
+    {
+        $fcIni = Carbon::parse($fc_ini);
+        $fcFin = Carbon::parse($fc_fin);
+
+        $diff = $fcIni->diffInDays($fcFin, false);
+        return $diff;
+    } 
     
     public function formatodmY($fecha)
     {

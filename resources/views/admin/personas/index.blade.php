@@ -22,30 +22,30 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
 
-        $('.formulario-eliminar').submit(function(e){            
-            e.preventDefault();  
+    Livewire.on('delPersona', PersonaId => {
             
-            Swal.fire({
-                title: "¿Estás Seguro?",
-                text: "",
-                icon: "warning",
-                showCancelButton: true,
-                confirmButtonColor: "#3085d6",
-                cancelButtonColor: "#d33",
-                confirmButtonText: "¡Si, Eliminar!",
-                cancelButtonText: "Cancelar"
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    /* Swal.fire({
-                    title: "Deleted!",
-                    text: "Your file has been deleted.",
+        Swal.fire({
+            title: "¿Estás Seguro?",
+            text: "",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "¡Si, Eliminar!",
+            cancelButtonText: "Cancelar"
+        }).then((result) => {
+            if (result.isConfirmed) {
+                Livewire.emit('deletePersona', PersonaId);
+                    Swal.fire({
+                    title: "Eliminada!",
+                    text: "Persona ha sido eliminada con exito.",
                     icon: "success"
-                    }); */
-                    this.submit();
-                }
-            });
-        })
-
-        
+                    });
+                //this.submit();
+            }
+        });
+    })
+    
+     
     </script>
 @endsection

@@ -57,7 +57,31 @@
                 showConfirmButton: true
             });                        
             $('#modalEditDocPersona').modal('hide')          
-        })        
+        })     
+        
+        Livewire.on('confirmEdit', PersonaId => {
+            
+            Swal.fire({
+                title: "No has ingresado documento. ¿Deseas continuar?",
+                text: "",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#3085d6",
+                cancelButtonColor: "#d33",
+                confirmButtonText: "¡Si, Editar!",
+                cancelButtonText: "Cancelar"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    Livewire.emit('update', 1);
+                        /* Swal.fire({
+                        title: "Eliminada!",
+                        text: "Persona ha sido eliminada con exito.",
+                        icon: "success"
+                        }); */
+                    //this.submit();
+                }
+            });
+        })
     </script>
 
 @endsection

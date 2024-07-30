@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Persona;
+use App\Models\ShipTipo;
 
 class Ship extends Model
 {
@@ -18,7 +19,8 @@ class Ship extends Model
         'trg',
         'loa',
         'manga',
-        'descripcion'
+        'descripcion',
+        'ship_tipo_id'
     ];
 
     // relacion uno a muchos
@@ -30,5 +32,9 @@ class Ship extends Model
     // uno a muchos 
     public function detalle_trayectoria(){
         return $this->hasMany(DetalleTrayectoria::class);
+    }
+
+    public function ship_tipo(){
+        return $this->belongsTo(ShipTipo::class);
     }
 }

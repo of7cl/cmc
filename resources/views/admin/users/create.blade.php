@@ -32,6 +32,21 @@
                         <span class="text-danger">{{$message}}</span>
                     @enderror
                 </div>
+                <div class="form-group">
+                    {!! Form::label('password_confirmation', 'Confirmar Contraseña') !!}
+                    {!! Form::password('password_confirmation',  ['class' => 'form-control', 'placeholder' => 'Repita contraseña']) !!}
+                    @error('password_confirmation')
+                        <span class="text-danger">{{$message}}</span>
+                    @enderror
+                </div>
+                @foreach ($roles as $role)
+                    <div>
+                        <label>
+                            {!! Form::checkbox('roles[]', $role->id, null, ['class' => 'mr-1']) !!}
+                            {{$role->name}}
+                        </label>
+                    </div>
+                @endforeach
                 {!! Form::submit('Agregar Usuario', ['class' => 'btn btn-primary']) !!}
             {!! Form::close() !!}
         </div>
