@@ -1,5 +1,7 @@
 <?php
 
+use Illuminate\Support\Facades\Auth;
+
 return [
 
     /*
@@ -133,7 +135,7 @@ return [
     */
 
     'usermenu_enabled' => true,
-    'usermenu_header' => false,
+    'usermenu_header' => true,
     'usermenu_header_class' => 'bg-primary',
     'usermenu_image' => false,
     'usermenu_desc' => false,
@@ -213,7 +215,7 @@ return [
     |
     */
 
-    'sidebar_mini' => 'lg',
+    'sidebar_mini' => 'sm',
     'sidebar_collapse' => false,
     'sidebar_collapse_auto_size' => false,
     'sidebar_collapse_remember' => false,
@@ -292,29 +294,48 @@ return [
     |
     */
 
-    'menu' => [        
+    'menu' => [
+        [
+            'type'         => 'navbar-notification',
+            'id'           => 'my-notification',      // An ID attribute (required).
+            'icon'         => 'fas fa-bell',          // A font awesome icon (required).
+            'icon_color'   => 'white',              // The initial icon color (optional).
+            'label'        => 0,                      // The initial label for the badge (optional).
+            'label_color'  => 'danger',               // The initial badge color (optional).
+            'route'          => 'notification.index',         // The url to access all notifications/elements (required).
+            'topnav_right' => true,                   // Or "topnav => true" to place on the left (required).
+            'dropdown_mode'   => true,                // Enables the dropdown mode (optional).
+            'dropdown_flabel' => 'Todas las notificaciones', // The label for the dropdown footer link (optional).
+            'update_cfg'   => [
+                'route' => 'notification.new',        // The url to periodically fetch new data (optional).
+                'period' => 60,                       // The update period for get new data (in seconds, optional).
+            ],
+        ],
         [
             'text' => 'Inicio',            
             'route'  => 'home',
             'icon' => 'fas fa-fw fa-home',
         ],        
         [
-            'text' => 'Documentos',
+            'text' => 'Documentación',
             'route'  => 'admin.control.index',
             'icon' => 'fas fa-fw fa-book',
             'can'  => 'documentos.index',
         ],
         [
-            'text' => 'Vacaciones y Descanso',
-            'url'  => '#',
+            'text' => 'Control de Trayectoria',
+            'route'  => 'admin.trayectorias.index',
             'icon' => 'fas fa-fw fa-suitcase',
-            'can'  => 'vacaciones-descanso.index',
+            'active'    => ['admin/trayectorias*'],
+            'can'  => 'control-trayectoria.index',
         ],
         [
-            'text' => 'Planificador de Embarcos',
-            'url'  => '#',
+            'text' => 'Programación de Embarcos',
+            //'route'  => 'admin.programacion_embarcos.index',            
+            'url' => '',
             'icon' => 'fas fa-fw fa-anchor',
-            'can'  => 'planificador-embarcos.index',
+            'active'    => ['admin/programacion_embarcos*'],
+            'can'  => 'programacion-embarcos.index',
         ],
         [
             'text'      => 'Reportes',            
@@ -357,6 +378,24 @@ return [
                     'route'       => 'admin.documentos.index',
                     'active'    => ['admin/documentos*'],
                     'can'       => 'mantencion.documentos.index',
+                ],
+                [
+                    'text'      => 'Parámetros',                    
+                    'route'     => 'admin.parameterdocs.index',
+                    'active'    => ['admin/parameterdocs*'],
+                    'can'       => 'mantencion.parameterdocs.index',
+                ],
+                [
+                    'text'      => 'Tipos de Nave',                    
+                    'route'     => 'admin.ship_tipos.index',
+                    'active'    => ['admin/ship_tipos*'],
+                    'can'       => 'mantencion.ship_tipos.index',
+                ],
+                [
+                    'text'      => 'Feriados',                    
+                    'route'     => 'admin.feriados.index',
+                    'active'    => ['admin/feriados*'],
+                    'can'       => 'mantencion.feriados.index',
                 ]
             ]            
         ],
@@ -368,11 +407,11 @@ return [
                 [
                     'text'      => 'Usuarios Sistema',
                     'route'       => 'admin.users.index',
-                    'active'    => ['admin/users*'],
+                    'active'    => ['admin/users*', 'admin/change_password*'],
                     'can'       => 'administracion.users.index'
                 ]
             ]            
-        ],        
+        ],             
     ],
 
     /*

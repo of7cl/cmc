@@ -29,4 +29,14 @@ class Rango extends Model
     public function documentos(){
         return $this->belongsToMany(Documento::class)->withPivot('obligatorio');
     }
+
+    // relacion muchos a muchos
+    public function ship_tipos(){
+        return $this->belongsToMany(ShipTipo::class)->withPivot('obligatorio', 'rango_id');
+    }
+
+    // uno a muchos 
+    // public function cabecera_trayectoria(){
+    //     return $this->hasMany(CabeceraTrayectoria::class);
+    // }
 }

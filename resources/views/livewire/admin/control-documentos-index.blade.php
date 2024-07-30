@@ -1,6 +1,29 @@
 <?php 
 use App\Http\Controllers\CarbonController;
-$fecha = new CarbonController;                                            
+use App\Http\Controllers\RangoDocumentoController; 
+
+$fecha = new CarbonController;        
+$rangoDocumento = new RangoDocumentoController;
+
+$rangos = $rangoDocumento->getRangos();
+
+$docs_rango = [];
+foreach($rangos as $rango)
+{
+    foreach($rango->documentos as $docs)
+    {
+        $doc = [
+            'rango_id' => $rango->id,
+            'documento_id' => $docs->pivot->documento_id,
+            'obligatorio' => $docs->pivot->obligatorio
+        ];
+        array_push($docs_rango, $doc);
+    }
+}
+
+//dd($docs_rango);
+//print_r ( $rangoDocumento->getExisteDocumentoRango($docs_rango, 26, 19) );
+
 ?>
 
 <div class="card">     
@@ -31,16 +54,16 @@ $fecha = new CarbonController;
         </div>        
     </div>   
     @if ($personas->count())
-    <div class="card-body table-responsive text-nowrap" style="max-height: 680px; /* padding:0%; */">            
-        <table class="table-xsm table-striped table-hover">
-            <thead class="table-secondary border border-secondary" {{-- style="position: sticky; top:0;" --}}>
+    <div class="card-body table-responsive text-nowrap" style="max-height: 680px; padding:0%;">            
+        <table class="table-xsm table-striped table-hover" style="border-collapse: separate;">
+            <thead class="table-secondary border border-secondary" style="position: sticky; top:0;">
                 <tr>
-                    <th rowspan="2" class="border border-secondary align-middle text-center">Nave</th>
-                    <th rowspan="2" class="border border-secondary align-middle text-center">Rango</th>
-                    <th rowspan="2" class="border border-secondary align-middle text-center th-lg">Dotación</th>
-                    <th colspan="{{$documentos->count()}}" class="border border-secondary text-center">Documentos</th>                        
-                </tr>
-                <tr>
+                    <th rowspan="1" class="border border-secondary align-middle text-center">Nave</th>
+                    <th rowspan="1" class="border border-secondary align-middle text-center">Rango</th>
+                    <th rowspan="1" class="border border-secondary align-middle text-center th-lg">Dotación</th>
+                    {{-- <th colspan="{{$documentos->count()}}" class="border border-secondary text-center">Documentos</th> --}}
+                {{-- </tr>
+                <tr> --}}
                     @foreach ($documentos as $documento)
                         <th class="border border-secondary align-middle text-center">{{$documento->nr_documento}}</th>
                     @endforeach
@@ -64,10 +87,13 @@ $fecha = new CarbonController;
                             @endif
                         </td>
                         <td class="border border-secondary align-middle text-center">{{$persona->nombre}}</td>   
-                        @foreach ($documentos as $documento)
+                        @foreach ($documentos as $documento)                            
+                            {{-- valida si persona tiene documentos asociados --}}
                             @if ($persona->documento->count())                                        
                                 <?php $cn = 0; ?>
-                                @foreach ($persona->documento as $doc_persona)                                        
+                                {{-- recorre documentos de la persona --}}
+                                @foreach ($persona->documento as $doc_persona)
+                                    {{-- valida si persona tiene el documento actual --}}
                                     @if ($doc_persona->pivot->documento_id == $documento->id)                                                                                               
                                         <?php 
                                             $cn++;
@@ -78,6 +104,7 @@ $fecha = new CarbonController;
                                         ?>
                                     @endif
                                 @endforeach
+                                {{-- muestra fecha --}}
                                 @if ($cn>0) 
                                     <?php                                            
                                         $diff = $fecha->diffFechaActual($fc_fin);
@@ -90,11 +117,29 @@ $fecha = new CarbonController;
                                     @else
                                         <td class="border border-secondary align-middle text-center table-success">{{ $fc_fin }}</td>
                                     @endif                                                                                
-                                @else
-                                    <td class="border border-secondary align-middle text-center"></td> 
+                                @else                                    
+                                    <?php $arr = $rangoDocumento->getExisteDocumentoRango($docs_rango, $documento->id, $persona->rango_id); ?>
+                                    <td class="border border-secondary align-middle text-center">                                        
+                                        @if($arr!=[])                                            
+                                            @if ($arr['obligatorio']==1)                                            
+                                                <a class="btn btn-primary btn-sm" href="{{route('admin.personas.show', $persona)}}">+</a>
+                                            {{-- @else
+                                            op --}}
+                                            @endif                                        
+                                        @endif                                 
+                                    </td> 
                                 @endif                                        
                             @else
-                                <td class="border border-secondary align-middle text-center"></td>
+                                <?php $arr = $rangoDocumento->getExisteDocumentoRango($docs_rango, $documento->id, $persona->rango_id); ?>
+                                <td class="border border-secondary align-middle text-center">
+                                    @if($arr!=[])                                        
+                                        @if ($arr['obligatorio']==1)                                            
+                                            <a class="btn btn-primary btn-sm" href="{{route('admin.personas.show', $persona)}}">+</a>
+                                        {{-- @else
+                                        op --}}
+                                        @endif                                        
+                                    @endif
+                                </td>
                             @endif                                                                                                   
                         @endforeach
                     </tr>

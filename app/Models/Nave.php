@@ -28,6 +28,6 @@ class Nave extends Model
     // relacion uno a muchos
 
     public function personas(){
-        return $this->hasMany(Personal::class);
+        //return $this->hasMany(Personal::class);
     }
 }
