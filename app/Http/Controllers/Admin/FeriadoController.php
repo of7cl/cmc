@@ -37,6 +37,10 @@ class FeriadoController extends Controller
      */
     public function store(Request $request)
     {
+        $request->validate([
+            'fc_feriado'    =>  'required|unique:feriados'
+        ]);
+
         $feriado = Feriado::create([
             'fc_feriado' => $request['fc_feriado'],
             'descripcion' => $request['descripcion']                              
@@ -82,10 +86,14 @@ class FeriadoController extends Controller
             $estado = 2;
         }
 
+        $request->validate([
+            'fc_feriado'    =>  "required|unique:feriados,fc_feriado,$feriado->id"
+        ]);
+
         Feriado::query()
             ->where('id', $feriado->id)
             ->update([
-                'fc_feriado' => $request['fc_feriado'],
+                //'fc_feriado' => $request['fc_feriado'],
                 'descripcion' => $request['descripcion'],                
                 'estado' => $estado
                 /* 'descripcion' => "descripción de prueba", */

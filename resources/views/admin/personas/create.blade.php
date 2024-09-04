@@ -64,7 +64,10 @@
                         <div class="col-12">
                             <div class="form-group">
                                 {!! Form::label('contrato_tipo_id', 'Tipo de Contrato') !!}
-                                {!! Form::select('contrato_tipo_id', $contrato_tipos, null, ['class' => 'form-control', 'placeholder' => 'Seleccionar Tipo de Contrato...']) !!}
+                                {!! Form::select('contrato_tipo_id', $rangos, null, [
+                                    'class' => 'form-control',
+                                    'placeholder' => 'Seleccionar Tipo de Contrato...',
+                                ]) !!}
                                 @error('contrato_tipo')
                                     <span class="text-danger">{{ $message }}</span>
                                 @enderror
@@ -76,12 +79,12 @@
                     {!! Form::label('file', 'Foto de Perfil') !!}
                     <div class="col">
                         <div style="position: relative; padding-bottom: 5%;">
-                            <img src="https://cdn.pixabay.com/photo/2023/02/18/11/00/icon-7797704_1280.png"
-                                alt="" style="position: relative; object-fit: cover; width: 100%; height: 100%;" id="picture">
+                            <img src="https://cdn.pixabay.com/photo/2023/02/18/11/00/icon-7797704_1280.png" alt=""
+                                style="position: relative; object-fit: cover; width: 100%; height: 100%;" id="picture">
                         </div>
                     </div>
-                    <div class="form-group">                        
-                        <div class="col-sm-10 mx-0 my-0">                            
+                    <div class="form-group">
+                        <div class="col-sm-10 mx-0 my-0">
                             {!! Form::file('file', ['class' => 'form-control-file', 'accept' => 'image/*']) !!}
                             @error('file')
                                 <span class="text-danger">{{ $message }}</span>
@@ -119,7 +122,8 @@
                     </div>
                 </div>
             </div>
-            {!! Form::submit('Crear Personal', ['class' => 'btn btn-primary']) !!}
+            {{-- {!! Form::submit('Crear Personal', ['class' => 'btn btn-primary']) !!} --}}
+            <input type="submit" value="Crear Personal" class="btn btn-primary" onclick="this.disabled=true;this.form.submit();">
             {!! Form::close() !!}
         </div>
     </div>
@@ -127,11 +131,10 @@
 @stop
 
 @section('js')
-    <script>        
-
+    <script>
         document.getElementById("file").addEventListener('change', cambiarImagen);
 
-        function cambiarImagen(event){
+        function cambiarImagen(event) {
             var file = event.target.files[0];
 
             var reader = new FileReader();
@@ -142,5 +145,22 @@
             reader.readAsDataURL(file);
         }
 
+        document.getElementById('rango_id').addEventListener('change', function() {            
+            var selectedElement = this.options[this.selectedIndex].text;
+            const selectElement = document.getElementById('contrato_tipo_id');
+            const allOptions = selectElement.options;                        
+            var existe = 0;
+            for (let i = 0; i < allOptions.length; i++) {            
+                if (allOptions[i].text == selectedElement) {
+                    selectElement.selectedIndex = i;
+                    existe++;
+                    break;
+                }
+            }
+            if(existe == 0)
+            {
+                selectElement.selectedIndex = 0;
+            }
+        });
     </script>
 @endsection

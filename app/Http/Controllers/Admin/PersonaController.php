@@ -44,10 +44,10 @@ class PersonaController extends Controller
     {
         $rangos = Rango::where('estado', 1)->pluck('nombre', 'id');
         $ships = Ship::where('estado', 1)->pluck('nombre', 'id');
-        $contrato_tipos = ContratoTipo::get()->pluck('name', 'id');        
+        //$contrato_tipos = ContratoTipo::get()->pluck('name', 'id');        
 
         /* return view('admin.personas.create', compact('rangos'), compact('ships')); */
-        return view('admin.personas.create', compact('rangos', 'ships', 'contrato_tipos'));
+        return view('admin.personas.create', compact('rangos', 'ships'));
     }
 
     /**
@@ -117,9 +117,9 @@ class PersonaController extends Controller
     {
         $rangos = Rango::where('estado', 1)->pluck('nombre', 'id');
         $ships = Ship::where('estado', 1)->pluck('nombre', 'id');
-        $contrato_tipos = ContratoTipo::get()->pluck('name', 'id');        
+        //$contrato_tipos = ContratoTipo::get()->pluck('name', 'id');        
         /* return view('admin.personas.edit', compact('persona'), compact('ships'), compact('rangos')); */
-        return view('admin.personas.edit', compact('persona', 'ships', 'rangos', 'contrato_tipos'));
+        return view('admin.personas.edit', compact('persona', 'ships', 'rangos'));
     }
 
     /**
@@ -245,7 +245,11 @@ class PersonaController extends Controller
                     $url = null;
                 }
             }
-                
+                        
+            if($request->eventual)  // chk true
+                $eventual = 2; // eventual
+            else
+                $eventual = 1; // normal
 
             $update = Persona::query()
                 ->where('id', $persona->id)
@@ -258,6 +262,7 @@ class PersonaController extends Controller
                     'fc_ingreso' => $request['fc_ingreso'],
                     'fc_baja' => $request['fc_baja'],
                     'estado' => $estado,
+                    'eventual' => $eventual,
                     'foto' => $url,
                     'contrato_tipo_id' => $request['contrato_tipo_id']
 

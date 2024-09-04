@@ -12,8 +12,9 @@
         <div class="card-body">
             
             {!! Form::open(['route' => 'admin.ships.store']) !!}
-                @include('admin.ships.partials.form')                
-                {!! Form::submit('Crear Nave', ['class' => 'btn btn-primary']) !!}
+                @include('admin.ships.partials.form')     
+                <input type="submit" value="Crear Nave" class="btn btn-primary" onclick="this.disabled=true;this.form.submit();">           
+                {{-- {!! Form::submit('Crear Nave', ['class' => 'btn btn-primary']) !!} --}}
             {!! Form::close() !!}
             
 

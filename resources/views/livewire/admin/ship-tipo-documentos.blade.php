@@ -1,150 +1,130 @@
 <div>
     <div class="card">
+
         <div class="card-header">
             <div class="row">
-                <div class="col-12">
-                    @if (session()->has('info'))
-                        <div class="alert alert-success">
-                            {{ session('info') }}
-                        </div>
-                    @endif
+                <div class="col-8">
+                    {!! Form::label('documentoFilter', 'Nombre') !!}
+                    <input wire:model="documentoFilter" class="form-control" placeholder="Ingrese nombre de documento">
                 </div>
-            </div>
-            <div class="row">
                 <div class="col-4">
-                    {!! Form::label('rangoFilter', 'Rango') !!}
-                    <select wire:model="rangoFilter" wire:change="getDocsRango" class="form-control">
-                        <option value="" disabled>Seleccione Rango...</option>
-                        @foreach ($rangos as $rango)
-                            <option value="{{ $rango->id }}">{{ $rango->nombre }}</option>
-                        @endforeach
+                    {!! Form::label('estadoFilter', 'Estado Documento') !!}
+                    <select wire:model="estadoFilter" class="form-control">
+                        <option value="">Todos</option>
+                        <option value="1">Activos</option>
+                        <option value="2">Inactivos</option>
                     </select>
                 </div>
             </div>
         </div>
-        @if ($rangoFilter != '')
-            <form wire:submit.prevent="update">
-                <div class="card-body">
-                    <table class="table table-striped">
-                        <tbody>
-                    {{-- <h2 class="h5">Listado de documentos</h2> --}}
-                            <?php $count = count($documentos); ?>
-                            @foreach ($documentos as $key => $documento)
-                                @if ($key % 2 == 0)
-                                <tr>
-                                    <td title="{{ $documento->nombre }}" style="cursor: pointer">
-                                            {{-- <label title="{{ $documento->nombre }}" style="cursor: pointer"> --}}
-                                                <input type="checkbox" wire:model="selDocs" value="{{ $documento->id }}" />
-                                                {{ $documento->nr_documento }} - {{ $documento->codigo_omi }}
-                                            {{-- </label> --}}
-                                        </td>
-                                        @if ($count == $key)
-                                            </tr>
-                                        @endif
+
+        @if ($documentos->count())
+            <div class="card-body table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            {{-- <th>ID</th> --}}
+                            <th>N° Curso</th>
+                            <th>Código OMI</th>
+                            <th>Nombre</th>
+                            <th>Name</th>
+                            <th>Estado</th>
+                            <th class="align-middle text-center">Rangos Asignados</th>
+                            <th colspan="1"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach ($documentos as $documento)
+                            <tr>
+                                {{-- <td>{{ $documento->id }}</td> --}}
+                                <td class="align-middle text-center">{{ $documento->nr_documento }}</td>
+                                <td class="align-middle text-center">{{ $documento->codigo_omi }}</td>
+                                <td class="align-middle">{{ $documento->nombre }}</td>
+                                <td class="align-middle">{{ $documento->name }}</td>
+                                @if ($documento->estado == 1)
+                                    <td class="align-middle text-center">Activo</td>
                                 @else
-                                    <td title="{{ $documento->nombre }}" style="cursor: pointer">
-                                        {{-- <label title="{{ $documento->nombre }}" style="cursor: pointer"> --}}
-                                            <input type="checkbox" wire:model="selDocs" value="{{ $documento->id }}" />
-                                            {{ $documento->nr_documento }} - {{ $documento->codigo_omi }}
-                                        {{-- </label> --}}
-                                    </td>
-                                </tr>
+                                    <td class="align-middle text-center">Inactivo</td>
                                 @endif
-                            @endforeach
-                        </tbody>
-                    </table>
-                </div>
-                <div class="modal-footer">
-                    <button type="submit" class="btn btn-primary">Asignar</button>
-                </div>
-            </form>
+                                <td class="align-middle text-center">{{ $this->getCountRangosByIdDocumento($documento->id) }}</td>
+                                <td class="align-middle text-center">
+                                    <input wire:click="asignarRango({{ $documento->id }})" type="button"
+                                        value="Asignar" class="btn btn-primary btn-sm" data-toggle="modal"
+                                        data-target="#modalAsignarRango" data-backdrop="static" data-keyboard="false">
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+        @else
+            <div class="card-body">
+                <strong>No hay ningún registro...</strong>
+            </div>
         @endif
-    {{-- <div class="card-body table-responsive "style="max-height: 680px;">            
-            @if ($rangoFilter != '')
-                <div>
-                    <div class="bg-white shadow rounded-lg mb-2">
-                        <form wire:submit.prevent="saveDocumento">
-                            <div class="row ml-2 mr-2">
-                                <div class="col-3 mt-2">
-                                    <label for="">Agregar Documento</label>
-                                </div>
-                            </div>
-                            <div class="row ml-2 mr-2">
-                                <div class="col-12 mb-2">
-                                    <select class="form-control" wire:model="documento_id">
-                                        <option value="" disabled>Seleccionar Documento...</option>
-                                        @foreach ($documentos as $documento)
-                                            <?php
-                                            $nombre = '';
-                                            if ($documento->codigo_omi == null && $documento->nombre == null) {
-                                                $nombre = '';
-                                            } elseif ($documento->codigo_omi == null && $documento->nombre != null) {
-                                                $nombre = $documento->nombre;
-                                            } elseif ($documento->codigo_omi != null && $documento->nombre == null) {
-                                                $nombre = $documento->codigo_omi;
-                                            } elseif ($documento->codigo_omi != null && $documento->nombre != null) {
-                                                $nombre = $documento->codigo_omi . '-' . $documento->nombre;
-                                            }
-                                            ?>
-                                            <option value="{{ $documento->id }}">{{ $nombre }}</option>
+    </div>
+
+    <div>
+        <form wire:submit.prevent="update">
+            <div wire:ignore.self class="modal fade" id="modalAsignarRango" tabindex="-1" role="dialog"
+                aria-labelledby="modalAsignarRangoTitle" aria-hidden="true">
+                <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="modalAsignarRangoTitle">Asignar Rangos</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"
+                                wire:click="close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            {{-- <div style="height:620px;"> --}}
+                            {{-- <form wire:submit.prevent="update"> --}}
+                            <div>                                
+                                <table class="table table-striped table-sm">
+                                    <tbody>
+                                        <?php $count = count($rangos); ?>
+                                        @foreach ($rangos as $key => $rango)                                            
+                                            @if ($key % 2 == 0)
+                                                <tr style="border-top-style: double; border-bottom-style: double;">
+                                                    <td 
+                                                        style="cursor: pointer; border-left-style: double;"
+                                                        class="align-middle text-center">                                                        
+                                                        <input type="checkbox" wire:model="selRangos" value="{{ $rango->id }}" style="accent-color: green; width: 40px; height: 20px;"/>                                                      
+                                                    </td>
+                                                    <td class="align-middle text-center">
+                                                        {{ $rango->nombre }}
+                                                    </td>
+                                                    
+                                                    @if ($count == $key)
+                                                        </tr>
+                                                    @endif
+                                            @else
+                                                <td
+                                                    style="cursor: pointer; border-left-style: double;"
+                                                    class="align-middle text-center">                                                    
+                                                    <input type="checkbox" wire:model="selRangos" value="{{ $rango->id }}"  style="accent-color: green; width: 40px; height: 20px;"/>
+                                                </td>
+                                                <td class="align-middle text-center" style="border-right-style: double;">
+                                                    {{ $rango->nombre }}
+                                                </td>
+                                                
+                                                </tr>
+                                            @endif
                                         @endforeach
-                                    </select>
-                                    @error('documento_id')
-                                        <span class="text-danger">{{ $message }}</span>
-                                    @enderror
-                                </div>
+                                    </tbody>
+                                </table>
                             </div>
-                            <div class="row ml-2 mr-2">
-                                <div class="col-1 mb-2 mr-2">
-                                    <input class="btn btn-secondary btn-sm" type="submit" value="Agregar">
-                                </div>
-                            </div>
-                        </form>
+                            {{-- </form> --}}
+                        </div>
+                        <div class="modal-footer">
+                            <button wire:click="close" type="button" class="btn btn-danger"
+                                data-dismiss="modal">Cancelar</button>
+                            <button type="submit" class="btn btn-primary" wire:loading.attr="disabled">Asignar</button>                            
+                        </div>
                     </div>
                 </div>
-            @endif            
-            @if ($ship_tipo_documentos)
-                <div>
-                    <form>
-                        <table class="table table-striped">
-                            <thead>
-                                <tr>
-                                    <th>ID</th>
-                                    <th>N° Curso</th>
-                                    <th>Código OMI</th>
-                                    <th>Nombre</th>
-                                    <th>Name</th>
-                                    <th>¿Obligatorio?</th>
-                                    <th colspan="1"></th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach ($ship_tipo_documentos as $ship_tipo_documento)
-                                    <tr>
-                                        <td>{{ $ship_tipo_documento->id }}</td>
-                                        <td>{{ $ship_tipo_documento->nr_documento }}</td>
-                                        <td>{{ $ship_tipo_documento->codigo_omi }}</td>
-                                        <td>{{ $ship_tipo_documento->nombre }}</td>
-                                        <td>{{ $ship_tipo_documento->name }}</td>
-                                        <td>
-                                            @if ($ship_tipo_documento->pivot->obligatorio == 1)
-                                                Si
-                                            @else
-                                                No
-                                            @endif
-                                        </td>
-                                        <td width="10px">
-                                            <button type="button" class="btn btn-danger btn-sm"
-                                                wire:click="$emit('deleteDoc', {{ $ship_tipo_documento->id }})">Eliminar</button>
-                                        </td>
-                                    </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
-                    </form>
-                </div>            
-            @endif
-        </div> --}}
-</div>
-
+            </div>
+        </form>
+    </div>
 </div>

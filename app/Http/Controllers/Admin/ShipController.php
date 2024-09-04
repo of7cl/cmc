@@ -49,7 +49,7 @@ class ShipController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'codigo'    =>  'required|unique:naves',
+            'codigo'    =>  'required|unique:ships',
             'nombre'     => 'required',  
             'ship_tipo_id' => 'required',
             'imo'     => 'required',
@@ -106,8 +106,8 @@ class ShipController extends Controller
      */
     public function update(Request $request, Ship $ship)
     {
-        $request->validate([
-            'codigo'    =>  'required|unique:naves',
+        $request->validate([            
+            'codigo'     => "required|unique:ships,codigo,$ship->id",
             'nombre'     => 'required', 
             'ship_tipo_id' => 'required',           
             'imo'     => 'required',

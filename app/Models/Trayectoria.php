@@ -27,5 +27,10 @@ class Trayectoria extends Model
     public function detalle_trayectoria(){
         return $this->hasMany(DetalleTrayectoria::class);
     }
+
+    // uno a muchos
+    public function ajuste_trayectoria(){
+        return $this->hasMany(AjusteTrayectoria::class);
+    }
     
 }

@@ -24,6 +24,7 @@ return new class extends Migration
             $table->string('foto')->nullable();
 
             $table->enum('estado', [1,2])->default(1); // 1 => activo, 2=> inactivo
+            $table->enum('eventual', [1,2])->default(1); // 1 => normal, 2=> eventual
             
             $table->unsignedBigInteger('ship_id')->nullable();            
             $table->unsignedBigInteger('rango_id')->nullable();
@@ -31,7 +32,7 @@ return new class extends Migration
 
             $table->foreign('ship_id')->references('id')->on('ships')->onDelete('set null');;
             $table->foreign('rango_id')->references('id')->on('rangos')->onDelete('set null');;
-            $table->foreign('contrato_tipo_id')->references('id')->on('contrato_tipos')->onDelete('set null');;
+            $table->foreign('contrato_tipo_id')->references('id')->on('rangos')->onDelete('set null');;
 
             $table->timestamps();
         });

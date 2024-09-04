@@ -32,6 +32,8 @@ class VencimientoDocumentosCommand extends Command
      */
     public function handle()
     {
+        Log::info('Inicio Proceso Notificaciones Vencimiento Documento');
+        $actualizados = 0;
         $personaDocumento = new PersonaDocumentoController();
         $personasDocumentos = $personaDocumento->getPersonasDocumentos();
         $documentoVencidos = $personaDocumento->getDocumentosVencidos($personasDocumentos);        
@@ -44,6 +46,9 @@ class VencimientoDocumentosCommand extends Command
                 'documento_id' => $documentoVencido['documento_id'],
                 'semaforo' => $documentoVencido['semaforo']
             ]);
-        }                
+            $actualizados++;
+        }      
+        Log::info('Notificaciones creadas/actualizadas => '.$actualizados);
+        Log::info('Termino Proceso Notificaciones Vencimiento Documento');          
     }
 }

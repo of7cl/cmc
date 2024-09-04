@@ -10,8 +10,8 @@
     @if (session('info'))
         <div class="alert alert-success">
             <strong>{{ session('info') }}</strong>
-        </div>
-    @endif
+        </div>        
+    @endif     
     {{-- @livewire('admin.control-documentos-index') --}}
     @livewire('admin.control-docs')
     {{-- <livewire:admin.control-docs lazy/> --}}
@@ -19,7 +19,12 @@
 @stop
 
 
-@section('js')
+@section('js') 
+    {{-- <script>
+        $(document).ready(function(){
+            $('[data-toggle="tooltip"]').tooltip();   
+        });
+    </script> --}}
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
         Livewire.on('alert', function(message) {

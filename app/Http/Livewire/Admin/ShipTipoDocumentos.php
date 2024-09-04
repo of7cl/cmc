@@ -12,49 +12,92 @@ class ShipTipoDocumentos extends Component
 {
     public $ship_tipo;
     public $documento_id = '';
-    public $rangoFilter = '';
-    public $rangos, $documentos;
-    public $selDocs = [];
+    public $documentoFilter = '';
+    public $estadoFilter = 1;
+    public $rangos;
+    public $selRangos = [];    
     public $ship_tipo_documentos;
+    public $ship_tipo_docs;    
+    public $arr_rango_doc = [];
 
     protected $listeners = ['render', 'deleteDocumento'];
 
     public function mount()
     {
-        $this->rangos = Rango::all();
-        $this->documentos = Documento::all();
+        $this->rangos = Rango::all();  
+        $this->ship_tipo_docs = ShipTipo::find($this->ship_tipo->id)
+            ->documentos()
+            ->orderBy('id')               
+            ->get();              
+        //$this->documentos = Documento::all();
     }
     public function render()
+    {        
+        $this->ship_tipo_documentos = ShipTipo::find($this->ship_tipo->id)
+            ->documentos()
+            ->orderBy('id')   
+            ->where('documento_id', $this->documento_id)         
+            ->get();
+        $documentos = Documento::query()
+                                ->when($this->documentoFilter, function ($query) {
+                                    $query->where('nombre', 'LIKE', '%' . $this->documentoFilter . '%');
+                                })
+                                ->when($this->estadoFilter, function ($query) {
+                                    $query->where('estado', $this->estadoFilter);
+                                })
+                                ->orderBy('id', 'asc')
+                                ->get();
+        return view('livewire.admin.ship-tipo-documentos', compact('documentos'));
+    }
+
+    public function getCountRangosByIdDocumento($id_doc)
     {
-        //$rangos = Rango::all();
-        //$documentos = Documento::all();
-        $ship_tipo_documentos = ShipTipo::find($this->ship_tipo->id)
+        $ship_tipo_rangos_doc = ShipTipo::find($this->ship_tipo->id)
             ->documentos()
             ->orderBy('id')
-            ->where('rango_id', $this->rangoFilter)
-            ->get();        
-        //return view('livewire.admin.ship-tipo-documentos', compact(/* 'rangos', 'documentos',  */'ship_tipo_documentos'));
-        return view('livewire.admin.ship-tipo-documentos');
+            ->wherePivot('documento_id', $id_doc)
+            ->get();
+
+        return $ship_tipo_rangos_doc->count();
+    }
+
+    public function close()
+    {
+        $this->reset('selRangos', 'arr_rango_doc', 'documento_id');
+    }
+
+    public function asignarRango($documento_id){
+        $this->documento_id = $documento_id;        
+        $this->getDocsRango();
     }
 
     public function getDocsRango()
     {
-        $this->ship_tipo_documentos = ShipTipo::find($this->ship_tipo->id)
+        $ship_tipo_rangos_doc = ShipTipo::find($this->ship_tipo->id)
             ->documentos()
             ->orderBy('id')
-            ->where('rango_id', $this->rangoFilter)
+            ->wherePivot('documento_id', $this->documento_id)
             ->get();
-        $this->selDocs = $this->ship_tipo_documentos->pluck('id')->toArray();
-        //dd($this->selDocs);
-        //dd($this->rangoFilter);
+        
+        foreach($ship_tipo_rangos_doc as $key => $rango_doc)
+        {
+            $this->arr_rango_doc[$key] = $rango_doc->pivot->rango_id;            
+        }
+        $this->selRangos = $this->arr_rango_doc;        
     }
 
     public function update()
-    {
-        $groupIds = $this->ship_tipo->documentos()->where('rango_id', $this->rangoFilter)->get()->pluck('id');        
-        $this->ship_tipo->documentos()->detach($groupIds);
-        $this->ship_tipo->documentos()->attach($this->selDocs, ['rango_id' => $this->rangoFilter]);                
-        session()->flash('info', 'Documentos asignados con éxito!');        
+    {        
+        $groupIds = $this->ship_tipo->documentos()->where('documento_id', $this->documento_id)->get()->pluck('id');
+        $this->ship_tipo->documentos()->detach($groupIds);                
+        foreach($this->selRangos as $rango_doc)
+        {
+            $this->ship_tipo->documentos()->attach($this->documento_id, ['rango_id' => $rango_doc]);
+        }
+        $this->getDocsRango();        
+        $this->close();
+        $this->emit('alert', 'Rangos asignados con exito!');   
+
     }
 
     public function saveDocumento()

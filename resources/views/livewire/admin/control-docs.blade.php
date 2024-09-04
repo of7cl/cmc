@@ -2,6 +2,7 @@
 use App\Http\Controllers\CarbonController;
 use App\Http\Controllers\RangoDocumentoController;
 use App\Http\Controllers\Admin\ParameterDocController;
+use App\Models\DetalleTrayectoria;
 
 $fecha = new CarbonController();
 $rangoDocumento = new RangoDocumentoController();
@@ -31,16 +32,8 @@ foreach ($rangos as $rango) {
     }
 }
 
-//dd($docs_rango);
-//print_r ( $rangoDocumento->getExisteDocumentoRango($docs_rango, 26, 19) );
-
 ?>
 @section('content_header')
-    {{-- <div class="row">
-        <div class="col-4">
-            <h1>Control de Documentos</h1>
-        </div>
-    </div> --}}
     <h1>Control de Documentos</h1>
 @stop
 <div wire:init="loadDocs">
@@ -49,34 +42,30 @@ foreach ($rangos as $rango) {
             <div class="ml-2 mb-2 mt-2 mr-4 text-red" wire:loading>Procesando...</div>
             <div class="card-header">
                 <div class="row">
-                    <div class="col-12 mb-2">
-                        {{-- <div class="custom-control custom-switch float-right">
-                            <input class="custom-control-input" type="checkbox" role="switch" id="flexSwitchCheckDefault">
-                            <label class="custom-control-label" for="flexSwitchCheckDefault">Default switch checkbox
-                                input</label>
-                        </div> --}}
-                        {{-- <div class="custom-control custom-switch custom-switch-off-danger custom-switch-on-danger float-right">
-                            <input type="checkbox" class="custom-control-input" id="customSwitchRed" wire:model="redFilter">
-                            <label class="custom-control-label" for="customSwitchRed">
-                                <input wire:model="cn_red" type="button" class="btn btn-sm ml-1" style="background-color: red">
-                            </label>
-                        </div> --}}
+                    <div class="col-12 mb-2">                             
+                        <input id="btn_cn_red" wire:model="cn_red" type="button" class="btn btn-sm ml-1 float-right" style="background-color: red">
+                        <input id="btn_cn_orange" wire:model="cn_orange" type="button" class="btn btn-sm ml-1 float-right" style="background-color: orange">
+                        <input id="btn_cn_yellow" wire:model="cn_yellow" type="button" class="btn btn-sm ml-1 float-right" style="background-color: yellow">
+                        <input id="btn_cn_green" wire:model="cn_green" type="button" class="btn btn-sm ml-1 float-right" style="background-color: green">
+                        <input id="btn_cn_pendiente" wire:model="cn_pendiente" type="button" class="btn btn-sm ml-1 float-right" style="background-color: black; color: white">
 
-                        <input wire:model="cn_red" type="button" class="btn btn-sm ml-1 float-right"
-                            style="background-color: red">
-                        <input wire:model="cn_orange" type="button" class="btn btn-sm ml-1 float-right"
-                            style="background-color: orange">
-                        <input wire:model="cn_yellow" type="button" class="btn btn-sm ml-1 float-right"
-                            style="background-color: yellow">
-                        <input wire:model="cn_green" type="button" class="btn btn-sm ml-1 float-right"
-                            style="background-color: green">
-                        <input wire:model="cn_pendiente" type="button" class="btn btn-sm ml-1 float-right"
-                            style="background-color: black; color: white">
-
+                        <input type="hidden" id="hd_cn_red" value="{{$flag_red}}">
+                        <input type="hidden" id="hd_cn_orange" value="{{$flag_orange}}">
+                        <input type="hidden" id="hd_cn_yellow" value="{{$flag_yellow}}">
+                        <input type="hidden" id="hd_cn_green" value="{{$flag_green}}">
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col-3">
+                    <div class="col-1">
+                        {!! Form::label('recordsPage', 'Mostrar') !!}
+                        <select wire:model="recordsPage" class="form-control">                            
+                            <option value="15">15</option>
+                            <option value="30">30</option>
+                            <option value="50">50</option>
+                            <option value="100">100</option>                                                                
+                        </select>
+                    </div>
+                    <div class="col-2">
                         {!! Form::label('shipFilter', 'Nave') !!}
                         <select wire:model="shipFilter" class="form-control">
                             <option value="">Seleccione Nave...</option>
@@ -99,34 +88,35 @@ foreach ($rangos as $rango) {
                         <input wire:model="nameFilter" class="form-control" placeholder="Ingrese nombre de dotación">
                     </div>
                     <div class="col-2">
-                        {!! Form::label('semaforoFilter', 'Estado') !!}
+                        {{-- {!! Form::label('semaforoFilter', 'Estado') !!} --}}
+                        <label id="leyenda">Estado</label>
                         <div class="row justify-content-md-center mt-2">
                             <div class="custom-control custom-switch custom-switch-off-dark custom-switch-on-dark"
-                                style="padding-left: 1.9rem;">
+                                style="padding-left: 1.9rem;" id="div_cn_pendiente">
                                 <input type="checkbox" class="custom-control-input" id="customSwitchBlack"
                                     wire:model="blackFilter" {{-- wire:click="semaforoFilter('pendiente')" --}}>
                                 <label class="custom-control-label" for="customSwitchBlack"></label>
                             </div>
                             <div class="custom-control custom-switch custom-switch-off-green custom-switch-on-green"
-                                style="padding-left: 1.9rem;">
+                                style="padding-left: 1.9rem;" id="div_cn_green">
                                 <input type="checkbox" class="custom-control-input" id="customSwitchGreen"
                                     wire:model="greenFilter" {{-- wire:click="semaforoFilter('green')" --}}>
                                 <label class="custom-control-label" for="customSwitchGreen"></label>
                             </div>
                             <div class="custom-control custom-switch custom-switch-off-yellow custom-switch-on-yellow"
-                                style="padding-left: 1.9rem;">
+                                style="padding-left: 1.9rem;" id="div_cn_yellow">
                                 <input type="checkbox" class="custom-control-input" id="customSwitchYellow"
                                     wire:model="yellowFilter" {{-- wire:click="semaforoFilter('yellow')" --}}>
                                 <label class="custom-control-label" for="customSwitchYellow"></label>
                             </div>
                             <div class="custom-control custom-switch custom-switch-off-orange custom-switch-on-orange"
-                                style="padding-left: 1.9rem;">
+                                style="padding-left: 1.9rem;" id="div_cn_orange">
                                 <input type="checkbox" class="custom-control-input" id="customSwitchOrange"
                                     wire:model="orangeFilter" {{-- wire:click="semaforoFilter('orange')" --}}>
                                 <label class="custom-control-label" for="customSwitchOrange"></label>
                             </div>
                             <div class="custom-control custom-switch custom-switch-off-danger custom-switch-on-danger"
-                                style="padding-left: 1.9rem;">
+                                style="padding-left: 1.9rem;" id="div_cn_red">
                                 <input type="checkbox" class="custom-control-input" id="customSwitchRed"
                                     wire:model="redFilter" {{-- wire:click="semaforoFilter('red')" --}}>
                                 <label class="custom-control-label" for="customSwitchRed"></label>
@@ -156,8 +146,12 @@ foreach ($rangos as $rango) {
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach ($personas as $persona)
+                            @foreach ($personas as $persona)                                   
+                                @if ($persona->eventual == 2)
+                                <tr style="background-color: rgb(252, 211, 151); cursor: pointer;" title="Personal Eventual">
+                                @else
                                 <tr>
+                                @endif                                
                                     <td class="border border-secondary" style="cursor: pointer">
                                         <button wire:click="edit({{ $persona->id }})" type="button"
                                             class="btn btn-xs btn-light" data-toggle="modal"
@@ -168,7 +162,28 @@ foreach ($rangos as $rango) {
                                         @if ($persona->ship_id)
                                             {{ $persona->ship->nombre }}
                                         @else
-                                            {{ '-' }}
+                                            <?php
+                                            $nm_estado = null;
+                                            if($persona->trayectoria)
+                                            {
+                                                $detalle = detalleTrayectoria::where('trayectoria_id', $persona->trayectoria->id)
+                                                ->where('fc_desde', '<=', now())
+                                                ->where('fc_hasta', '>=', now())
+                                                ->whereNotIn('estado_id', [18,19,20])
+                                                ->first();
+                                                if($detalle)
+                                                {
+                                                    $nm_estado = 'En Tierra';
+                                                }
+                                                else {
+                                                    $nm_estado = 'Sin Programación';
+                                                }
+                                            }
+                                            else {
+                                                $nm_estado = 'Sin Programación';
+                                            }
+                                            ?>
+                                            {{ $nm_estado }}
                                         @endif
                                     </td>
                                     <td class="border border-secondary align-middle text-center">
@@ -179,7 +194,7 @@ foreach ($rangos as $rango) {
                                         @endif
                                     </td>
                                     <td class="border border-secondary">
-                                        {{-- {{ $persona->id }} -  --}}{{ $persona->nombre }}
+                                        {{ $persona->nombre }}
                                     </td>
                                     @foreach ($documentos as $documento)
                                         <?php
@@ -207,8 +222,7 @@ foreach ($rangos as $rango) {
                                         {{-- valida si persona tiene documentos asociados --}}
                                         @if ($persona->documento->count())
                                             <?php
-                                            $cn = 0;
-                                            //$bo_existe = 0;
+                                            $cn = 0;                                            
                                             $estado = 0;
                                             $fc_fin = null;
                                             ?>
@@ -217,14 +231,12 @@ foreach ($rangos as $rango) {
                                                 {{-- valida si persona tiene el documento actual --}}
                                                 @if ($doc_persona->pivot->documento_id == $documento->id)
                                                     <?php
-                                                    $cn++;
-                                                    //$bo_existe++;
+                                                    $cn++;                                                    
                                                     if ($cn > 0) {
                                                         $estado = $doc_persona->pivot->estado;
                                                         $semaforo = $doc_persona->pivot->semaforo;
                                                         if ($doc_persona->pivot->fc_fin) {
-                                                            $fc_fin = $doc_persona->pivot->fc_fin;
-                                                            //$diff = $fecha->diffFechaActual($fc_fin);
+                                                            $fc_fin = $doc_persona->pivot->fc_fin;                                                            
                                                             $fc_fin = $fecha->formatodmY($fc_fin);
                                                         } else {
                                                             if ($estado == 0) {
@@ -238,8 +250,7 @@ foreach ($rangos as $rango) {
                                             {{-- muestra fecha --}}
                                             {{-- si persona tiene documento asociado y tiene fechas ingresadas --}}
                                             @if ($cn > 0)
-                                                @if ($estado == 0)
-                                                    {{-- @if ($diff <= $flag_red) --}}
+                                                @if ($estado == 0)                                                    
                                                     @if ($semaforo == '2')
                                                         <td class="align-middle text-center"
                                                             style="background-color: red; {{$cell_border}}">
@@ -247,13 +258,12 @@ foreach ($rangos as $rango) {
                                                                 wire:click="edit_doc({{ $documento->id }}, {{ $persona }})"
                                                                 data-toggle="modal" data-target="#modalEditDocPersona"
                                                                 data-backdrop="static" data-keyboard="false"
-                                                                {{-- href="{{ route('admin.personas.show', $persona) }}" --}}>{{ $fc_fin }}</a>
+                                                                >{{ $fc_fin }}</a>
                                                         </td>
                                                         <?php
                                                         $cn_red++;
                                                         array_push($arr_red, $persona->id);
-                                                        ?>
-                                                        {{-- @elseif($diff > $flag_red && $diff < $flag_orange) --}}
+                                                        ?>                                                        
                                                     @elseif ($semaforo == '3')
                                                         <td class="align-middle text-center"
                                                             style="background-color: orange; {{$cell_border}}">
@@ -261,13 +271,12 @@ foreach ($rangos as $rango) {
                                                                 wire:click="edit_doc({{ $documento->id }}, {{ $persona }})"
                                                                 data-toggle="modal" data-target="#modalEditDocPersona"
                                                                 data-backdrop="static" data-keyboard="false"
-                                                                {{-- href="{{ route('admin.personas.show', $persona) }}" --}}>{{ $fc_fin }}</a>
+                                                                >{{ $fc_fin }}</a>
                                                         </td>
                                                         <?php
                                                         $cn_orange++;
                                                         array_push($arr_orange, $persona->id);
-                                                        ?>
-                                                        {{-- @elseif($diff > $flag_orange && $diff < $flag_yellow) --}}
+                                                        ?>                                                        
                                                     @elseif ($semaforo == '4')
                                                         <td class="align-middle text-center"
                                                             style="background-color: yellow; {{$cell_border}}">
@@ -275,7 +284,7 @@ foreach ($rangos as $rango) {
                                                                 wire:click="edit_doc({{ $documento->id }}, {{ $persona }})"
                                                                 data-toggle="modal" data-target="#modalEditDocPersona"
                                                                 data-backdrop="static" data-keyboard="false"
-                                                                {{-- href="{{ route('admin.personas.show', $persona) }}" --}}>{{ $fc_fin }}</a>
+                                                                >{{ $fc_fin }}</a>
                                                         </td>
                                                         <?php
                                                         $cn_yellow++;
@@ -288,7 +297,7 @@ foreach ($rangos as $rango) {
                                                                 wire:click="edit_doc({{ $documento->id }}, {{ $persona }})"
                                                                 data-toggle="modal" data-target="#modalEditDocPersona"
                                                                 data-backdrop="static" data-keyboard="false"
-                                                                {{-- href="{{ route('admin.personas.show', $persona) }}" --}}>{{ $fc_fin }}</a>
+                                                                >{{ $fc_fin }}</a>
                                                         </td>
                                                         <?php
                                                         $cn_green++;
@@ -303,7 +312,7 @@ foreach ($rangos as $rango) {
                                                             wire:click="edit_doc({{ $documento->id }}, {{ $persona }})"
                                                             data-toggle="modal" data-target="#modalEditDocPersona"
                                                             data-backdrop="static" data-keyboard="false"
-                                                            {{-- href="{{ route('admin.personas.show', $persona) }}" --}}>
+                                                            >
                                                             @if ($fc_fin == null)
                                                                 Pendiente
                                                             @else
@@ -316,25 +325,11 @@ foreach ($rangos as $rango) {
                                                     array_push($arr_pendiente, $persona->id);
                                                     ?>
                                                 @endif
-                                            @else
-                                                {{-- busca si documento en curso pertenece a rango y/o tipo de nave --}}
-                                                <?php
-                                                /* if ($persona->ship_id) {
-                                                    if ($persona->ship->ship_tipo) {
-                                                        $arr = $rangoDocumento->getExisteDocumentoRango($docs_rango, $persona->ship->ship_tipo->documentos, $documento->id, $persona->rango_id);
-                                                    } else {
-                                                        $arr = $rangoDocumento->getExisteDocumentoRango($docs_rango, null, $documento->id, $persona->rango_id);
-                                                    }
-                                                } else {
-                                                    $arr = $rangoDocumento->getExisteDocumentoRango($docs_rango, null, $documento->id, $persona->rango_id);
-                                                } */
-                                                ?>
+                                            @else                                                
                                                 <td class="border border-secondary align-middle text-center">
                                                     {{-- si documento pertenece a rango y/o tipo de nave --}}
                                                     @if ($arr != [])
-                                                        @if ($arr['obligatorio'] == 1)
-                                                            {{-- <a class="btn btn-primary btn-xs"
-                                                                href="{{ route('admin.personas.show', $persona) }}">+</a> --}}
+                                                        @if ($arr['obligatorio'] == 1)                                                            
                                                             @if ($arr['origen'] == 'rango')
                                                                 <input
                                                                     wire:click="edit_doc({{ $documento->id }}, {{ $persona }})"
@@ -354,25 +349,11 @@ foreach ($rangos as $rango) {
                                                     @endif
                                                 </td>
                                             @endif
-                                        @else
-                                            {{-- busca si documento en curso pertenece a rango y/o tipo de nave --}}
-                                            <?php
-                                            /* if ($persona->ship_id) {
-                                                if ($persona->ship->ship_tipo) {
-                                                    $arr = $rangoDocumento->getExisteDocumentoRango($docs_rango, $persona->ship->ship_tipo->documentos, $documento->id, $persona->rango_id);
-                                                } else {
-                                                    $arr = $rangoDocumento->getExisteDocumentoRango($docs_rango, null, $documento->id, $persona->rango_id);
-                                                }
-                                            } else {
-                                                $arr = $rangoDocumento->getExisteDocumentoRango($docs_rango, null, $documento->id, $persona->rango_id);
-                                            } */
-                                            ?>
+                                        @else                                            
                                             <td class="border border-secondary align-middle text-center">
                                                 {{-- si documento pertenece a rango y/o tipo de nave --}}
                                                 @if ($arr != [])
-                                                    @if ($arr['obligatorio'] == 1)
-                                                        {{-- <a class="btn btn-primary btn-xs"
-                                                            href="{{ route('admin.personas.show', $persona) }}">+</a> --}}
+                                                    @if ($arr['obligatorio'] == 1)                                                        
                                                         @if ($arr['origen'] == 'rango')
                                                             <input
                                                                 wire:click="edit_doc({{ $documento->id }}, {{ $persona }})"
@@ -387,13 +368,7 @@ foreach ($rangos as $rango) {
                                                                 class="btn btn-success btn-xs" data-toggle="modal"
                                                                 data-target="#modalEditDocPersona"
                                                                 data-backdrop="static" data-keyboard="false">
-                                                        @endif
-                                                        {{-- <input
-                                                            wire:click="edit_doc({{ $documento->id }}, {{ $persona }})"
-                                                            type="button" value="+"
-                                                            class="btn btn-primary btn-xs" data-toggle="modal"
-                                                            data-target="#modalEditDocPersona" data-backdrop="static"
-                                                            data-keyboard="false"> --}}
+                                                        @endif                                                        
                                                     @endif
                                                 @endif
                                             </td>
@@ -414,16 +389,26 @@ foreach ($rangos as $rango) {
                             $this->arr_green = $arr_green;
                             $this->bo_arr = true;
                             ?>
+                            
                         </tbody>
-                    </table>
-                    {{-- @livewire('admin.create-persona') --}}
+                    </table>                                          
                 </div>
+                @if($personas->hasPages())
+                    <div class="card-footer">
+                        <div class="row">                            
+                            <div>
+                                {{ $personas->links() }}
+                            </div>
+                        </div>                        
+                    </div>
+                @endif
             @else
                 <div class="card-body">
                     <strong>No hay ningún registro...</strong>
                 </div>
             @endif            
         </div>
+        {{-- modalCreatePersona --}}
         <div>
             <form>
                 <div wire:ignore.self class="modal fade" id="modalCreatePersona" tabindex="-1" role="dialog"
@@ -436,8 +421,7 @@ foreach ($rangos as $rango) {
                                     <span aria-hidden="true">&times;</span>
                                 </button>
                             </div>
-                            <div class="modal-body">
-                                {{-- <div style="height:620px;"> --}}
+                            <div class="modal-body">                                
                                 <div>
                                     <div class="form-group">
                                         <label for="nombre" class="form-label">Nombre</label>
@@ -561,6 +545,7 @@ foreach ($rangos as $rango) {
                 </div>
             </form>
         </div>
+        {{-- modalEditDocPersona --}}
         <div>
             <form wire:submit.prevent="update_doc">
                 <div wire:ignore.self class="modal fade" id="modalEditDocPersona" tabindex="-1" role="dialog"
@@ -648,11 +633,7 @@ foreach ($rangos as $rango) {
                                             @error('archivo')
                                                 <span class="text-danger">{{ $message }}</span>
                                             @enderror
-                                        </div>
-                                        {{-- <div class="custom-file">
-                                            <input type="file" class="custom-file-input" id="{{ $identificador }}" wire:model="archivo">
-                                            <label class="custom-file-label" for="{{ $identificador }}">Choose file</label>
-                                            </div> --}}
+                                        </div>                                        
                                     </div>
                                     <div class="row mx-0">
                                         @if ($archivo)
@@ -686,9 +667,44 @@ foreach ($rangos as $rango) {
             </form>
         </div>
     @else
-        <div class="text-3xl text-red">
-            {{-- <i class="fas fa-spinner animate-spin"></i>  --}}
+        <div class="text-3xl text-red">            
             Procesando...
         </div>
     @endif
 </div>
+@push('js')
+    <script>
+        $(document).ready(function(){
+            //$('[data-toggle="tooltip"]').tooltip();               
+            if (typeof window.Livewire !== 'undefined') {
+                window.Livewire.hook('message.processed', (message, component) => {
+                    //$('[data-toggle="tooltip"]').tooltip('dispose').tooltip();
+                    hd_red = $('#hd_cn_red').val();
+                    hd_orange = $('#hd_cn_orange').val();
+                    hd_yellow = $('#hd_cn_yellow').val();
+                    hd_green = $('#hd_cn_green').val();
+
+                    lbl_red = 'Vencimiento Menor a ' + hd_red + ' Días';
+                    lbl_orange = 'Vencimiento Entre ' + hd_red + ' y ' + hd_orange + ' Días';
+                    lbl_yellow = 'Vencimiento Entre ' + hd_orange + ' y ' + hd_yellow + ' Días';
+                    lbl_green = 'Vencimiento Mayor ' + hd_yellow + ' Días';
+                    
+                    //$('#leyenda').tooltip({title: "<h1><strong>HTML</strong> inside <code>the</code> <em>tooltip</em></h1>", html: true, placement: "right"}); 
+                    //$('#leyenda').tooltip({title: lbl_leyenda, html: true, placement: "right"}); 
+                    $('#btn_cn_pendiente').tooltip({title: "Pendientes", html: false, placement: "top"}); 
+                    $('#btn_cn_green').tooltip({title: lbl_green, html: false, placement: "top"}); 
+                    $('#btn_cn_red').tooltip({title: lbl_red, html: false, placement: "top"}); 
+                    $('#btn_cn_yellow').tooltip({title: lbl_yellow, html: false, placement: "top"}); 
+                    $('#btn_cn_orange').tooltip({title: lbl_orange, html: false, placement: "top"}); 
+
+                    $('#div_cn_pendiente').tooltip({title: "Pendientes", html: false, placement: "top"}); 
+                    $('#div_cn_green').tooltip({title: lbl_green, html: false, placement: "top"}); 
+                    $('#div_cn_red').tooltip({title: lbl_red, html: false, placement: "top"}); 
+                    $('#div_cn_yellow').tooltip({title: lbl_yellow, html: false, placement: "top"}); 
+                    $('#div_cn_orange').tooltip({title: lbl_orange, html: false, placement: "top"});
+                    
+                });
+            }            
+        });
+    </script>
+@endpush

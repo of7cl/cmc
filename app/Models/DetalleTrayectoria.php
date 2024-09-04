@@ -13,6 +13,7 @@ class DetalleTrayectoria extends Model
         'trayectoria_id',
         'ship_id',
         'estado_id',
+        'plaza_id',
         'fc_desde',
         'fc_hasta',
         'total_dias_calendario',

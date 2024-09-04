@@ -70,7 +70,7 @@
                         <div class="col-12">
                             <div class="form-group">
                                 {!! Form::label('contrato_tipo_id', 'Tipo de Contrato') !!}
-                                {!! Form::select('contrato_tipo_id', $contrato_tipos, null, ['class' => 'form-control', 'placeholder' => 'Seleccionar Tipo de Contrato...']) !!}
+                                {!! Form::select('contrato_tipo_id', $rangos, null, ['class' => 'form-control', 'placeholder' => 'Seleccionar Tipo de Contrato...']) !!}
                                 @error('contrato_tipo_id')
                                     <span class="text-danger">{{ $message }}</span>
                                 @enderror
@@ -85,9 +85,18 @@
                                 {!! Form::checkbox('estado', 1, true) !!}
                             @else
                                 {!! Form::checkbox('estado', 2, false) !!}
-                            @endif
+                            @endif                
+                        </label>
+                    </div>
+                    <div class="form-group">
+                        {!! Form::label('eventual', 'Eventual?') !!}
+                        <label class="ml-2">
         
-        
+                            @if ($persona->eventual == 2)
+                                {!! Form::checkbox('eventual', 2, true) !!}
+                            @else
+                                {!! Form::checkbox('eventual', 1, false) !!}
+                            @endif                
                         </label>
                     </div>
                 </div>

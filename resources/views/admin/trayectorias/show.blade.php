@@ -30,6 +30,36 @@
             });
             $('#modalCreatePersona').modal('hide')
         })
+    
+        Livewire.on('detalle', function(message) {
+            Swal.fire({
+                //title: "OK!",
+                text: message,
+                icon: "success",
+                showConfirmButton: true
+            });
+            $('#modalAgregarDetalle').modal('hide')
+        })
+
+        Livewire.on('ajuste', function(message) {
+            Swal.fire({
+                //title: "OK!",
+                text: message,
+                icon: "success",
+                showConfirmButton: true
+            });
+            $('#modalAjusteInicial').modal('hide')
+        })
+
+        Livewire.on('validacion', function(message) {
+            Swal.fire({
+                //title: "OK!",
+                text: message,
+                icon: "warning",
+                showConfirmButton: true
+            });
+            //$('#modalAgregarDetalle').modal('hide')
+        })
     </script>
 
     {{-- <script type="text/javascript">

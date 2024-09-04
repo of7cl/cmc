@@ -15,6 +15,7 @@ class ControlTrayectoria extends Component
     public $nameFilter;
     public $rangoFilter;
     public $shipFilter;
+    public $estadoFilter = 1;    
 
     protected $listeners = ['render' => 'render'];
 
@@ -27,7 +28,10 @@ class ControlTrayectoria extends Component
     public function render()
     {
         $personas = Persona::query()
-            ->where('estado', 1)
+            //->where('estado', 1)
+            ->when($this->estadoFilter, function ($query) {
+                $query->where('estado', $this->estadoFilter);
+            })
             ->when($this->rangoFilter, function ($query) {
                 $query->where('rango_id', $this->rangoFilter);
             })

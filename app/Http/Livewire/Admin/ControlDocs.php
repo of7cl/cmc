@@ -12,6 +12,8 @@ use Illuminate\Support\Facades\Storage;
 use Livewire\Component;
 use Livewire\WithFileUploads;
 
+use Livewire\WithPagination;
+
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 
@@ -21,12 +23,14 @@ use Illuminate\Database\Eloquent\Builder;
 class ControlDocs extends Component
 {
     use WithFileUploads;
+    protected $paginationTheme = 'bootstrap';
 
     public $rangos;
     public $ships;
     public $nameFilter;
     public $rangoFilter;
     public $shipFilter;
+    public $recordsPage = '15';
 
     public $persona;
     //public $personas;
@@ -78,6 +82,8 @@ class ControlDocs extends Component
 
     //protected $listeners = ['render' => 'render'];
     protected $listeners = ['update_doc'];
+
+    use WithPagination;
 
     public function loadDocs()
     {
@@ -135,79 +141,18 @@ class ControlDocs extends Component
                     $query->where('semaforo', '5');
                 });
             })
-            ->orderBy('id', 'desc')->get();
-
+            ->orderBy('id', 'desc')
+            ->paginate($this->recordsPage);
+            //->get();        
         $documentos = Documento::where('estado', 1)->orderBy('id', 'asc')->get();
         $this->reset('cn_red', 'cn_orange', 'cn_yellow', 'cn_green', 'cn_pendiente');
+        $this->resetPage();
         return view('livewire.admin.control-docs', compact('personas', 'documentos'));
-    }
-
-    /* public function semaforoFilter($value)
-    {
-        if ($value == 'pendiente') {
-            $this->reset('redFilter', 'orangeFilter', 'yellowFilter', 'greenFilter');            
-        } elseif ($value == 'red') {
-            $this->reset('blackFilter', 'orangeFilter', 'yellowFilter', 'greenFilter');
-        } elseif ($value == 'orange') {
-            $this->reset('blackFilter', 'redFilter', 'yellowFilter', 'greenFilter');
-        } elseif ($value == 'yellow') {
-            $this->reset('blackFilter', 'redFilter', 'orangeFilter', 'greenFilter');
-        } elseif ($value == 'green') {
-            $this->reset('blackFilter', 'redFilter', 'orangeFilter', 'yellowFilter');
-        }
-
-        $this->arrSemaforo();
-        $this->bo_semaforo = true;
-        $this->emit('render');
-    } */
-
-    /* public function arrSemaforo()
-    {
-        if ($this->blackFilter) {
-            $this->arr_semaforo = [];
-            foreach ($this->arr_pendiente as $value) {
-                if (!in_array($value, $this->arr_semaforo, true)) {
-                    array_push($this->arr_semaforo, $value);
-                }
-            }
-        }
-        if ($this->redFilter) {
-            $this->arr_semaforo = [];
-            foreach ($this->arr_red as $value) {
-                if (!in_array($value, $this->arr_semaforo, true)) {
-                    array_push($this->arr_semaforo, $value);
-                }
-            }
-        }
-        if ($this->orangeFilter) {
-            $this->arr_semaforo = [];
-            foreach ($this->arr_orange as $value) {
-                if (!in_array($value, $this->arr_semaforo, true)) {
-                    array_push($this->arr_semaforo, $value);
-                }
-            }
-        }
-        if ($this->yellowFilter) {
-            $this->arr_semaforo = [];
-            foreach ($this->arr_yellow as $value) {
-                if (!in_array($value, $this->arr_semaforo, true)) {
-                    array_push($this->arr_semaforo, $value);
-                }
-            }
-        }
-        if ($this->greenFilter) {
-            $this->arr_semaforo = [];
-            foreach ($this->arr_green as $value) {
-                if (!in_array($value, $this->arr_semaforo, true)) {
-                    array_push($this->arr_semaforo, $value);
-                }
-            }
-        }
-    } */
+    }    
 
     public function edit_doc($documento_id, Persona $persona)
     {
-        //$this->close_doc();
+        $this->skipRender();
         $this->persona = $persona;
         foreach ($persona->documento as $documento) {
             if ($documento->pivot->documento_id == $documento_id) {
@@ -347,7 +292,7 @@ class ControlDocs extends Component
 
             $this->persona->documento()->sync($docs);
 
-            $this->close_doc();
+            $this->reseteo_doc();
             $this->resetErrorBag();
             $this->emit('render');
             $this->emit('alert_upd_doc', 'Documento editado con exito!');
@@ -359,15 +304,23 @@ class ControlDocs extends Component
 
     public function close_doc()
     {
+        $this->skipRender();
+        $this->reset('persona', 'nombre', 'nombre_doc', 'codigo_omi', 'nr_documento', 'id_documento', 'nm_archivo_original', 'nm_archivo_guardado', 'estado', 'fc_fin', 'fc_inicio', 'archivo');
+        $this->identificador = rand();
+        $this->resetErrorBag();
+    }
+
+    public function reseteo_doc()
+    {        
         $this->reset('persona', 'nombre', 'nombre_doc', 'codigo_omi', 'nr_documento', 'id_documento', 'nm_archivo_original', 'nm_archivo_guardado', 'estado', 'fc_fin', 'fc_inicio', 'archivo');
         $this->identificador = rand();
         $this->resetErrorBag();
     }
 
     public function edit($id)
-    {
-        //dd($id);
-        $this->close();
+    {        
+        $this->skipRender();
+        $this->resetear();
         $this->id_persona = $id;
         $this->persona = Persona::findOrfail($id);
         $this->nombre = $this->persona->nombre;
@@ -376,8 +329,7 @@ class ControlDocs extends Component
         $this->ship_id = $this->persona->ship_id;
         $this->fc_nacimiento = $this->persona->fc_nacimiento;
         $this->fc_ingreso = $this->persona->fc_ingreso;
-        $this->fc_baja = $this->persona->fc_baja;
-        //dd($this->rango_id);
+        $this->fc_baja = $this->persona->fc_baja;        
     }
 
     public function update()
@@ -395,7 +347,7 @@ class ControlDocs extends Component
                 'fc_baja' => $this->fc_baja,
                 'estado' => 1
             ]);
-        $this->close();
+        $this->resetear();
         $this->emit('render');
         $this->emit('alert', 'Persona editada con exito!');
         //dd($this->rango_id);
@@ -403,6 +355,12 @@ class ControlDocs extends Component
 
     public function close()
     {
+        $this->skipRender();
+        $this->reset('nombre', 'rut', 'rango_id', 'ship_id', 'fc_nacimiento', 'fc_ingreso', 'fc_baja');
+    }
+
+    public function resetear()
+    {        
         $this->reset('nombre', 'rut', 'rango_id', 'ship_id', 'fc_nacimiento', 'fc_ingreso', 'fc_baja');
     }
 }

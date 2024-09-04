@@ -15,7 +15,8 @@
             
             {!! Form::open(['route' => 'admin.rangos.store']) !!}
                 @include('admin.rangos.partials.form')                
-                {!! Form::submit('Crear Rango', ['class' => 'btn btn-primary']) !!}
+                {{-- {!! Form::submit('Crear Rango', ['class' => 'btn btn-primary']) !!} --}}
+                <input type="submit" value="Crear Rango" class="btn btn-primary" onclick="this.disabled=true;this.form.submit();">
             {!! Form::close() !!}
             
 

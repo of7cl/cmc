@@ -41,9 +41,24 @@
                     @endforeach                    
                 </tbody>
             </table>
-
-            
-
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-2" style="border-style:double;">Flag Rojo</div>
+                <div class="col-5" style="border-style:double;">Vencimiento menor a {{$parameterdoc->flag_red}} días</div>
+            </div>
+            <div class="row">
+                <div class="col-2" style="border-style:double;">Flag Naranjo</div>
+                <div class="col-5" style="border-style:double;">Vencimiento mayor a {{$parameterdoc->flag_red}} días y menor a {{$parameterdoc->flag_orange}} días</div>
+            </div>
+            <div class="row">
+                <div class="col-2" style="border-style:double;">Flag Amarillo</div>
+                <div class="col-5" style="border-style:double;">Vencimiento mayor a {{$parameterdoc->flag_orange}} días y menor a {{$parameterdoc->flag_green}} días</div>
+            </div>
+            <div class="row">
+                <div class="col-2" style="border-style:double;">Flag Verde</div>
+                <div class="col-5" style="border-style:double;">Vencimiento mayor a {{$parameterdoc->flag_green}} Días</div>
+            </div>        
         </div>
     </div>
 @stop

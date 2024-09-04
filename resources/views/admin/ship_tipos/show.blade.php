@@ -46,14 +46,14 @@
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
-        Livewire.on('alert', function(message, icon) {
+        Livewire.on('alert', function(message) {
             Swal.fire({
-                //title: "OK!",
+                //title: message,
                 text: message,
-                icon: icon,
+                icon: "success",
                 showConfirmButton: true
             });                        
-            $('#modalEditDocPersona').modal('hide')          
+            $('#modalAsignarRango').modal('hide')          
         })        
     </script>
 

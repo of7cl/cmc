@@ -15,8 +15,10 @@ class Kernel extends ConsoleKernel
      * @return void
      */
     protected function schedule(Schedule $schedule)
-    {
-        $schedule->command('documento:vencimiento')->everyMinute();
+    {                
+        $schedule->command('documento:vencimiento')->hourly();
+        $schedule->command('updsemaforo:documentos')->hourly();
+        $schedule->command('updestadotrayectoria:persona')->hourly();        
         // $schedule->call(function () {
 
         //     // your schedule code

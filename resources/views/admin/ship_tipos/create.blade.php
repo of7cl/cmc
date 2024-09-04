@@ -17,7 +17,8 @@
             
             {!! Form::open(['route' => 'admin.ship_tipos.store']) !!}
                 @include('admin.ship_tipos.partials.form')                
-                {!! Form::submit('Crear Tipo de Nave', ['class' => 'btn btn-primary']) !!}
+                {{-- {!! Form::submit('Crear Tipo de Nave', ['class' => 'btn btn-primary']) !!} --}}
+                <input type="submit" value="Crear Tipo de Nave" class="btn btn-primary" onclick="this.disabled=true;this.form.submit();">
             {!! Form::close() !!}
             
 

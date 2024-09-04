@@ -1,7 +1,11 @@
+<?php
+use App\Models\Rango;
+use App\Models\DetalleTrayectoria;
+?>
 <div class="card">
     <div class="card-header">
         <div class="row">
-            <div class="col-4">
+            <div class="col-3">
                 {!! Form::label('shipFilter', 'Nave') !!}
                 <select wire:model="shipFilter" class="form-control">
                     <option value="">Seleccione Nave...</option>
@@ -10,7 +14,7 @@
                     @endforeach
                 </select>
             </div>
-            <div class="col-4">
+            <div class="col-3">
                 {!! Form::label('rangoFilter', 'Rango') !!}
                 <select wire:model="rangoFilter" class="form-control">
                     <option value="">Seleccione Rango...</option>
@@ -23,10 +27,14 @@
                 {!! Form::label('nameFilter', 'Nombre') !!}
                 <input wire:model="nameFilter" class="form-control" placeholder="Ingrese nombre de dotación">
             </div>
-            {{-- <div class="col-4">            
-                <button type="button" class="btn btn-primary" data-toggle="modal"
-                    data-target="#modalCreatePersona">Nuevo</button>
-            </div> --}}
+            <div class="col-2">
+                {!! Form::label('estadoFilter', 'Estado Persona') !!}
+                <select wire:model="estadoFilter" class="form-control">
+                    <option value="">Todos</option>
+                    <option value="1">Activos</option>
+                    <option value="2">Inactivos</option>                    
+                </select>
+            </div>
 
         </div>
     </div>
@@ -40,21 +48,43 @@
                         <th>Nombre</th>
                         <th>RUT</th>
                         <th>Rango</th>
-                        <th>Nave</th>
-                        <th>Contrato</th>
+                        <th>Estado</th>
+                        <th>Nave</th>                        
+                        {{-- <th>Contrato</th>
                         <th>Fecha Nacimiento</th>
-                        <th>Fecha Ingreso</th>
-                        {{-- <th>Fecha Baja</th> --}}
-                        
-                        {{-- <th colspan="3"></th> --}}
+                        <th>Fecha Ingreso</th> --}}                        
                     </tr>
                 </thead>
                 <tbody>                    
                     @foreach ($personas as $persona)
-                        <tr onclick="window.location='{{ route('admin.trayectorias.show', $persona->id) }}'" 
-                            title="Ver control de trayectoria"
-                            style="cursor: pointer;">                            
+                        <?php
+                        $nm_estado = null;
+                        if($persona->trayectoria)
+                        {
+                            $detalle = detalleTrayectoria::where('trayectoria_id', $persona->trayectoria->id)
+                            ->where('fc_desde', '<=', now())
+                            ->where('fc_hasta', '>=', now())
+                            ->whereNotIn('estado_id', [18,19,20])
+                            ->first();
+                            if($detalle)
+                            {
+                                $nm_estado = $detalle->estado->nombre;
+                            }
+                            else {
+                                $nm_estado = 'Sin Programación';
+                            }
+                        }
+                        else {
+                            $nm_estado = 'Sin Programación';
+                        }
+                        ?>
+                        @if($persona->eventual == 2)
+                        <tr onclick="window.location='{{ route('admin.trayectorias.show', $persona->id) }}'" title="Ver control de trayectoria (Personal Eventual)" style="cursor: pointer; background-color: rgb(252, 211, 151)">                            
+                        @else
+                        <tr onclick="window.location='{{ route('admin.trayectorias.show', $persona->id) }}'" title="Ver control de trayectoria" style="cursor: pointer;">
+                        @endif
                             <td>{{$persona->id}}</td>
+                            {{-- <td>{{$persona->trayectoria->id}}</td> --}}
                             <td>{{$persona->nombre}}</td>
                             <td>{{$persona->rut}}</td>                            
                             <td>
@@ -63,13 +93,18 @@
                                 @endif                                
                             </td>
                             <td>
-                                @if ($persona->ship_id)
-                                    {{$persona->ship->nombre}}
-                                @endif                                
+                                {{$nm_estado}}
                             </td>
                             <td>
+                                @if ($persona->ship_id)
+                                    {{$persona->ship->nombre}}
+                                @else
+                                    En Tierra
+                                @endif                                
+                            </td>                            
+                            {{-- <td>
                                 @if ($persona->contrato_tipo_id)
-                                    {{$persona->contratoTipo->name}}
+                                    {{ Rango::where('id', $persona->contrato_tipo_id)->first()->nombre; }}
                                 @endif                                
                             </td>
                             <td>
@@ -81,15 +116,7 @@
                                 @if ($persona->fc_ingreso)
                                     {{date('d-m-Y', strtotime($persona->fc_ingreso))}}                                                                            
                                 @endif
-                            </td>                            
-                            {{-- <td>
-                                @if ($persona->fc_baja)
-                                    {{date('d-m-Y', strtotime($persona->fc_baja))}}
-                                @endif                                
-                            </td>                                                        --}}
-                            {{-- <td width="10px">
-                                <a class="btn btn-success btn-sm" href="{{route('admin.trayectorias.show', $persona->id)}}">Ver</a>
-                            </td>  --}}                           
+                            </td>   --}}                                                                              
                         </tr>
                     @endforeach
                 </tbody>

@@ -17,7 +17,8 @@
     <div class="card">
         <div class="card-body">
             {!! Form::model($rango, ['route' => ['admin.rangos.update', $rango], 'method' => 'put']) !!}
-            <table class="table table-striped">
+            {!! Form::submit('Asignar', ['class' => 'btn btn-primary float-right mb-2']) !!}
+            <table class="table table-striped table-sm">
                 <tbody>
                     <?php $count = count($documentos); ?>
                     @foreach ($documentos as $key => $documento)
@@ -29,28 +30,48 @@
                         @endforeach
                         {{-- par --}}
                         @if ($key % 2 == 0)
-                            <tr>
-                                <td title="{{ $documento->nombre }}" style="cursor: pointer">
+                            <tr style="border-top-style: double; border-bottom-style: double;">
+                                <td title="{{ $documento->nombre }}" style="cursor: pointer; border-left-style: double;" class="align-middle text-center">
                                     {{-- {{ $key }} --}}
                                     @if ($bo_existe == 1)
-                                        {!! Form::checkbox('documentos[]', $documento->id, null, ['class' => 'mr-1', 'checked' => 'checked']) !!}
+                                        {!! Form::checkbox('documentos[]', $documento->id, null, ['class' => 'mr-2 ml-2', 'checked' => 'checked', 'style' => 'width: 40px; height: 20px;']) !!}
                                     @else
-                                        {!! Form::checkbox('documentos[]', $documento->id, null, ['class' => 'mr-1']) !!}
-                                    @endif                                    
-                                    {{ $documento->nr_documento }} {{ $documento->codigo_omi }} {{ $documento->nombre }} 
+                                        {!! Form::checkbox('documentos[]', $documento->id, null, ['class' => 'mr-2 ml-2', 'style' => 'width: 40px; height: 20px;']) !!}
+                                    @endif 
+                                </td>
+                                <td class="align-middle text-center">                                       
+                                    {{ $documento->nr_documento }} 
+                                </td>
+                                <td class="align-middle text-center">
+                                    {{ $documento->codigo_omi }} 
+                                </td>
+                                <td class="align-middle">
+                                    @if($documento->nombre <> '')
+                                        {{ $documento->nombre }} 
+                                    @else
+                                        {{ $documento->name }} 
+                                    @endif
                                 </td>
                                 @if ($count == $key)
                                     </tr>
                                 @endif
                         @else
-                                <td title="{{ $documento->nombre }}" style="cursor: pointer">
+                                <td title="{{ $documento->nombre }}" style="cursor: pointer; border-left-style: double;" class="align-middle text-center">
                                     {{-- {{ $key }} --}}
                                     @if ($bo_existe == 1)
-                                        {!! Form::checkbox('documentos[]', $documento->id, null, ['class' => 'mr-1', 'checked' => 'checked']) !!}
+                                        {!! Form::checkbox('documentos[]', $documento->id, null, ['class' => 'mr-2 ml-2', 'checked' => 'checked', 'style' => 'width: 40px; height: 20px;']) !!}
                                     @else
-                                        {!! Form::checkbox('documentos[]', $documento->id, null, ['class' => 'mr-1']) !!}
+                                        {!! Form::checkbox('documentos[]', $documento->id, null, ['class' => 'mr-2 ml-2', 'style' => 'width: 40px; height: 20px;']) !!}
                                     @endif
-                                    {{ $documento->nr_documento }} {{ $documento->codigo_omi }} {{ $documento->nombre }}
+                                </td>
+                                <td class="align-middle text-center">
+                                    {{ $documento->nr_documento }} 
+                                </td>
+                                <td class="align-middle text-center">
+                                    {{ $documento->codigo_omi }} 
+                                </td>
+                                <td style="border-right-style: double;" class="align-middle">
+                                    {{ $documento->nombre }}                                 
                                 </td>
                             </tr>
                         @endif

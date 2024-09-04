@@ -54,6 +54,7 @@ class TrayectoriaController extends Controller
             $trayectoria = Trayectoria::create([
                 'persona_id' => $persona->id
             ]);
+            $persona = Persona::find($id);
         }        
         return view('admin.trayectorias.show', compact('persona'));
     }

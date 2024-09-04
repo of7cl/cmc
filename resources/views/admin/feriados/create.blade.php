@@ -25,8 +25,10 @@
                     <span class="text-danger">{{ $message }}</span>
                 @enderror
             </div>
+
+            <input type="submit" value="Crear Feriado" class="btn btn-primary" onclick="this.disabled=true;this.form.submit();">
             
-            {!! Form::submit('Crear Feriado', ['class' => 'btn btn-primary']) !!}
+            {{-- {!! Form::submit('Crear Feriado', ['class' => 'btn btn-primary']) !!} --}}
             {!! Form::close() !!}
         </div>
     </div>

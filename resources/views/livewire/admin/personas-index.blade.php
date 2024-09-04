@@ -1,3 +1,6 @@
+<?php
+use App\Models\Rango;
+?>
 <div class="card">
     <div class="card-header">
         {{-- <input wire:model="search" class="form-control" placeholder="Ingrese nombre de la persona"> --}}
@@ -59,8 +62,11 @@
                     </thead>
                     <tbody>
                         @foreach ($personas as $persona)
-                            {{-- <tr ondblclick="alert('dobleclic')" href="{{ route('admin.personas.show', $persona->id) }}"> --}}
+                            @if ($persona->eventual == 2)
+                            <tr style="background-color: rgb(252, 211, 151); cursor: pointer;" title="Personal Eventual">
+                            @else
                             <tr>
+                            @endif                                                      
                                 <td>{{ $persona->id }}</td>
                                 <td>{{ $persona->nombre }}</td>
                                 <td>{{ $persona->rut }}</td>
@@ -76,7 +82,7 @@
                                 </td>
                                 <td>
                                     @if ($persona->contrato_tipo_id)
-                                        {{ $persona->contratoTipo->name }}
+                                        {{ Rango::where('id', $persona->contrato_tipo_id)->first()->nombre; }}
                                     @endif
                                 </td>
                                 <td>

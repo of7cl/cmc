@@ -13,7 +13,8 @@
             
             @include('admin.documentos.partials.form')            
 
-            {!! Form::submit('Crear Documento', ['class' => 'btn btn-primary']) !!}
+            {{-- {!! Form::submit('Crear Documento', ['class' => 'btn btn-primary']) !!} --}}
+            <input type="submit" value="Crear Documento" class="btn btn-primary" onclick="this.disabled=true;this.form.submit();">
         {!! Form::close() !!}
 
         
