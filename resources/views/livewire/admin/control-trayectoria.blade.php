@@ -49,6 +49,7 @@ use App\Models\DetalleTrayectoria;
                         <th>RUT</th>
                         <th>Rango</th>
                         <th>Estado</th>
+                        <th>Hasta</th>
                         <th>Nave</th>                        
                         {{-- <th>Contrato</th>
                         <th>Fecha Nacimiento</th>
@@ -59,6 +60,7 @@ use App\Models\DetalleTrayectoria;
                     @foreach ($personas as $persona)
                         <?php
                         $nm_estado = null;
+                        $fc_hasta = '';
                         if($persona->trayectoria)
                         {
                             $detalle = detalleTrayectoria::where('trayectoria_id', $persona->trayectoria->id)
@@ -69,13 +71,14 @@ use App\Models\DetalleTrayectoria;
                             if($detalle)
                             {
                                 $nm_estado = $detalle->estado->nombre;
+                                $fc_hasta = $detalle->fc_hasta;
                             }
                             else {
-                                $nm_estado = 'Sin Programación';
+                                $nm_estado = 'SIN PROGRAMACIÓN';
                             }
                         }
                         else {
-                            $nm_estado = 'Sin Programación';
+                            $nm_estado = 'SIN PROGRAMACIÓN';
                         }
                         ?>
                         @if($persona->eventual == 2)
@@ -95,6 +98,7 @@ use App\Models\DetalleTrayectoria;
                             <td>
                                 {{$nm_estado}}
                             </td>
+                            <td>@if($fc_hasta) {{ date('d/m/Y', strtotime($fc_hasta)) }} @endif</td>
                             <td>
                                 @if ($persona->ship_id)
                                     {{$persona->ship->nombre}}

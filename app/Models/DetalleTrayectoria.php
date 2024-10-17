@@ -24,6 +24,7 @@ class DetalleTrayectoria extends Model
         'dias_inhabiles_favor',
         'dias_inhabiles_consumidos',
         'ajuste',
+        'motivo_id',
         'observaciones'
     ];
 
@@ -41,6 +42,11 @@ class DetalleTrayectoria extends Model
     // uno a muchos inversa
     public function estado(){
         return $this->belongsTo(Estado::class);
+    }
+
+    // uno a muchos inversa
+    public function motivo(){
+        return $this->belongsTo(Motivo::class);
     }
     
 }

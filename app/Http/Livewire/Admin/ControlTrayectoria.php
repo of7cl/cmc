@@ -26,7 +26,11 @@ class ControlTrayectoria extends Component
     }
 
     public function render()
-    {
+    {        
+        $nave = Ship::where('id', $this->shipFilter)->first();
+        $nm_nave = 'sin nave';
+        if($nave)
+            $nm_nave = $nave->nombre;    
         $personas = Persona::query()
             //->where('estado', 1)
             ->when($this->estadoFilter, function ($query) {
@@ -35,7 +39,13 @@ class ControlTrayectoria extends Component
             ->when($this->rangoFilter, function ($query) {
                 $query->where('rango_id', $this->rangoFilter);
             })
-            ->when($this->shipFilter, function ($query) {
+            /* ->when($this->shipFilter, function ($query) {
+                $query->where('ship_id', $this->shipFilter);
+            }) */
+            ->when($nm_nave == 'En Tierra', function ($query) {
+                $query->where('ship_id', null);
+            })
+            ->when($nm_nave != 'En Tierra' && $this->shipFilter, function ($query) {
                 $query->where('ship_id', $this->shipFilter);
             })
             ->when($this->nameFilter, function ($query) {

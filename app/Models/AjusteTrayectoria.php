@@ -15,7 +15,8 @@ class AjusteTrayectoria extends Model
         'vac_legales_ld',
         'embarco_1x1',
         'ajuste_descanso',
-        'feriado_progresivo'
+        'feriado_progresivo',
+        'fc_desde'
     ];
 
     // uno a muchos inversa

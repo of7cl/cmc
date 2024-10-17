@@ -313,6 +313,7 @@ $fecha = new CarbonController();
                                     <thead class="table-secondary border border-secondary"
                                         style="position: sticky; top:0;">
                                         <tr>
+                                            <th></th>
                                             <th colspan="1" style="cursor: pointer" wire:click="order('ship_id')"
                                                 class="border border-secondary align-middle text-center text-xs">
                                                 Nave
@@ -452,13 +453,14 @@ $fecha = new CarbonController();
                                                 @else
                                                     <i class="fas fa-sort float-right mt-1"></i>
                                                 @endif
-                                            </th>                                            
+                                            </th>         
+                                            <th></th>                                   
                                         </tr>
                                     </thead>
                                     <tbody>
                                         {{-- {{$detallesTrayectoria}} --}}
-                                        @if ($detallesTrayectoria)
-                                            @foreach ($detallesTrayectoria as $detalleTrayectoria)
+                                        @if ($detallesTrayectoria)                                            
+                                            @foreach ($detallesTrayectoria as $detalleTrayectoria)                                                
                                                 @if($detalleTrayectoria->estado_id != 18 && $detalleTrayectoria->estado_id != 19 && $detalleTrayectoria->estado_id != 20)
                                                     <?php 
                                                         $boMenorIgualFcDesde = $fecha->getFechaEsMenorIgualHoy($detalleTrayectoria->fc_desde);
@@ -472,7 +474,18 @@ $fecha = new CarbonController();
                                                     @endif
                                                 @else
                                                     <tr>
-                                                @endif
+                                                @endif 
+                                                    @if ($max_id_det->max_id_det == $detalleTrayectoria->id)
+                                                    <td colspan="1" class="border border-secondary text-sm text-nowrap align-middle text-center" style="cursor: pointer" title="Editar Detalle">
+                                                        <button wire:click="editDetalle({{ $detalleTrayectoria->id }})" type="button"
+                                                            class="btn btn-xs btn-light" data-toggle="modal"
+                                                            data-target="#modalEditDetalle" data-backdrop="static"
+                                                            data-keyboard="false"><i class="fas fa-edit"></i></button>
+                                                    </td>                                                        
+                                                    @else
+                                                    <td colspan="1" class="border border-secondary text-sm text-nowrap align-middle text-center">
+                                                    </td>
+                                                    @endif                                                                                                       
                                                     <td colspan="1"
                                                         class="border border-secondary text-sm text-nowrap align-middle text-center">
                                                         @if ($detalleTrayectoria->ship_id)
@@ -524,7 +537,16 @@ $fecha = new CarbonController();
                                                     <td colspan="1"
                                                         class="border border-secondary text-sm align-middle text-center">
                                                         {{ $detalleTrayectoria->observaciones }}
-                                                    </td>                                                    
+                                                    </td>   
+                                                    @if ($max_id_det->max_id_det == $detalleTrayectoria->id)
+                                                    <td colspan="1" class="border border-secondary text-sm text-nowrap align-middle text-center" style="cursor: pointer" title="Eliminar Detalle">
+                                                        <button wire:click="$emit('delDetalle', {{ $detalleTrayectoria->id }})" type="button"
+                                                            class="btn btn-xs btn-danger"><i class="fas fa-trash"></i></button>
+                                                    </td>                                                        
+                                                    @else
+                                                    <td colspan="1" class="border border-secondary text-sm text-nowrap align-middle text-center">
+                                                    </td>
+                                                    @endif                                                  
                                                 </tr>
                                             @endforeach
 
@@ -536,6 +558,7 @@ $fecha = new CarbonController();
                                     <thead class="table-secondary border border-secondary"
                                         style="position: sticky; top:0;">
                                         <tr>
+                                            <th></th>
                                             <th colspan="1" style="cursor: pointer" wire:click="order('ship_id')"
                                                 class="border border-secondary align-middle text-center text-xs">
                                                 Nave
@@ -732,10 +755,7 @@ $fecha = new CarbonController();
                                                     <i class="fas fa-sort float-right mt-1"></i>
                                                 @endif 
                                             </th>
-                                            {{-- <th colspan="2"
-                                                class="border border-secondary align-middle text-center text-xs">
-                                            </th> --}}
-
+                                            <th></th>                                            
                                         </tr>
                                     </thead>
                                     <tbody>                                    
@@ -755,6 +775,17 @@ $fecha = new CarbonController();
                                                 @else
                                                     <tr>
                                                 @endif
+                                                    @if ($max_id_det->max_id_det == $detalleTrayectoria->id)
+                                                    <td colspan="1" class="border border-secondary text-sm text-nowrap align-middle text-center" style="cursor: pointer" title="Editar Detalle">
+                                                        <button wire:click="editDetalle({{ $detalleTrayectoria->id }})" type="button"
+                                                            class="btn btn-xs btn-light" data-toggle="modal"
+                                                            data-target="#modalEditDetalle" data-backdrop="static"
+                                                            data-keyboard="false"><i class="fas fa-edit"></i></button>
+                                                    </td>                                                        
+                                                    @else
+                                                    <td colspan="1" class="border border-secondary text-sm text-nowrap align-middle text-center">
+                                                    </td>
+                                                    @endif 
                                                     <td colspan="1"
                                                         class="border border-secondary text-sm text-nowrap align-middle text-center">
                                                         @if ($detalleTrayectoria->ship_id)
@@ -821,6 +852,15 @@ $fecha = new CarbonController();
                                                         class="border border-secondary text-sm align-middle text-center">
                                                         {{ $detalleTrayectoria->observaciones }}
                                                     </td>                                                
+                                                    @if ($max_id_det->max_id_det == $detalleTrayectoria->id)
+                                                    <td colspan="1" class="border border-secondary text-sm text-nowrap align-middle text-center" style="cursor: pointer" title="Eliminar Detalle">
+                                                        <button wire:click="$emit('delDetalle', {{ $detalleTrayectoria->id }})" type="button"
+                                                            class="btn btn-xs btn-danger"><i class="fas fa-trash"></i></button>
+                                                    </td>                                                        
+                                                    @else
+                                                    <td colspan="1" class="border border-secondary text-sm text-nowrap align-middle text-center">
+                                                    </td>
+                                                    @endif
                                                 </tr>
                                             @endforeach
                                         @endif
@@ -867,6 +907,28 @@ $fecha = new CarbonController();
                                             </div>
                                         </div>
                                     </div>
+                                    @if($bo_embarco_1x1)
+                                    <div class="row">
+                                        <div class="col-12">
+                                            <div class="row">
+                                                <div class="col-12">
+                                                    <div class="form-group">
+                                                        {!! Form::label('motivo_id', 'Motivo') !!}
+                                                        <select class="form-control" wire:model="motivo_id">
+                                                            <option value="" disabled>Seleccionar Motivo...</option>
+                                                            @foreach ($motivos as $motivo)
+                                                                <option value="{{ $motivo->id }}">{{ $motivo->nombre }}</option>
+                                                            @endforeach
+                                                        </select>
+                                                        @error('motivo_id')
+                                                            <span class="text-danger">{{ $message }}</span>
+                                                        @enderror
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    @endif
                                     <div class="row">
                                         <div class="col-12">
                                             <div class="row">
@@ -1056,10 +1118,212 @@ $fecha = new CarbonController();
                                                 </tr>                                                                                
                                             </tbody>
                                         </table>
-                                    </div>                                                                              
+                                    </div>     
+                                    
+                                    <div id="divFcDiasProgresivos" class="bg-white shadow rounded-lg mb-2">
+                                        <table class="table table-sm" style="border-collapse: separate;">                                            
+                                            <tbody>                                   
+                                                <tr>
+                                                    <td colspan="2" class="border border-secondary text-xs align-middle">FECHA INICIO DÍAS PROGRESIVOS</td>
+                                                    <td colspan="2" class="border border-secondary text-xs text-center">
+                                                        <input type="date" wire:model="fc_desde_ajuste_inicial"/>
+                                                    </td>                                                    
+                                                </tr>                                                                                                                            
+                                            </tbody>
+                                        </table>
+                                    </div>     
                                 </div>
                                 <div class="modal-footer">
                                     <button wire:click="closeAjuste" type="button" class="btn btn-danger"
+                                        data-dismiss="modal">Cancelar</button>                                    
+                                    <input class="btn btn-primary" type="submit" value="Editar" wire:loading.attr="disabled">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            {{-- modal editar detalle --}}
+            <div>
+                <form wire:submit.prevent="updateDetalle">
+                    <div wire:ignore.self class="modal fade" id="modalEditDetalle" tabindex="-1" role="dialog"
+                        aria-labelledby="modalEditDetalleTitle" aria-hidden="true">
+                        <div class="modal-dialog modal-md modal-dialog-centered modal-dialog-scrollable" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="modalEditDetalleTitle">Editar Detalle</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"
+                                        wire:click="close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body">   
+                                    <div class="row">
+                                        <div class="col-12">
+                                            <div class="row">
+                                                <div class="col-12">
+                                                    <div class="form-group">
+                                                        {!! Form::label('edit_estado_id', 'Estado') !!}
+                                                        <select class="form-control" wire:model="edit_estado_id" wire:change="estadoChangeEdit">
+                                                            <option value="" disabled>Seleccionar Estado...</option>
+                                                            @foreach ($estados as $estado)
+                                                                <option value="{{ $estado->id }}">{{ $estado->nombre }}</option>
+                                                            @endforeach
+                                                        </select>
+                                                        @error('edit_estado_id')
+                                                            <span class="text-danger">{{ $message }}</span>
+                                                        @enderror
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    @if($bo_embarco_1x1)
+                                    <div class="row">
+                                        <div class="col-12">
+                                            <div class="row">
+                                                <div class="col-12">
+                                                    <div class="form-group">
+                                                        {!! Form::label('edit_motivo_id', 'Motivo') !!}
+                                                        <select class="form-control" wire:model="edit_motivo_id">
+                                                            <option value="" disabled>Seleccionar Motivo...</option>
+                                                            @foreach ($motivos as $motivo)
+                                                                <option value="{{ $motivo->id }}">{{ $motivo->nombre }}</option>
+                                                            @endforeach
+                                                        </select>
+                                                        @error('edit_motivo_id')
+                                                            <span class="text-danger">{{ $message }}</span>
+                                                        @enderror
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    @endif
+                                    <div class="row">
+                                        <div class="col-12">
+                                            <div class="row">
+                                                <div class="col-12">
+                                                    <div class="form-group">
+                                                        {!! Form::label('edit_ship_id', 'Nave') !!}
+                                                        <select class="form-control" wire:model="edit_ship_id">
+                                                            <option value="" disabled>Seleccionar Nave...</option>
+                                                            @foreach ($ships as $ship)
+                                                                <option value="{{ $ship->id }}">{{ $ship->nombre }}</option>
+                                                            @endforeach
+                                                        </select>
+                                                        @error('edit_ship_id')
+                                                            <span class="text-danger">{{ $message }}</span>
+                                                        @enderror
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-12">
+                                            <div class="row">
+                                                <div class="col-12">
+                                                    <div class="form-group">
+                                                        {!! Form::label('edit_plaza_id', 'Plaza') !!}
+                                                        <select class="form-control" wire:model="edit_plaza_id">
+                                                            <option value="" disabled>Seleccionar Plaza...</option>
+                                                            @foreach ($rangos as $rango)
+                                                                <option value="{{ $rango->id }}">{{ $rango->nombre }}</option>
+                                                                {{-- @if($persona->rango_id == $rango->id)
+                                                                    <option value="{{ $rango->id }}">{{ $rango->nombre }}</option>                                                                    
+                                                                @else
+                                                                    <option value="{{ $rango->id }}" selected>{{ $rango->nombre }}</option>
+                                                                @endif --}}
+                                                            @endforeach
+                                                        </select>
+                                                        @error('edit_plaza_id')
+                                                            <span class="text-danger">{{ $message }}</span>
+                                                        @enderror
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>                                                                        
+                                    <div class="row">
+                                        <div class="col-5">
+                                            <div class="row">
+                                                <div class="col-12">
+                                                    <div class="form-group">
+                                                        <label for="">Desde</label>
+                                                        <input type="date" class="form-control" wire:model="edit_fc_desde" wire:change="setDiferenciaEdit">
+                                                        @error('edit_fc_desde')
+                                                            <span class="text-danger">{{ $message }}</span>
+                                                        @enderror
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-5">
+                                            <div class="row">
+                                                <div class="col-12">
+                                                    <div class="form-group">
+                                                        <label for="">Hasta</label>
+                                                        <input type="date" class="form-control" wire:model="edit_fc_hasta" wire:change="setDiferenciaEdit">
+                                                        @error('edit_fc_hasta')
+                                                            <span class="text-danger">{{ $message }}</span>
+                                                        @enderror
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-2">
+                                            <div class="row">
+                                                <div class="col-12">
+                                                    <div class="form-group">
+                                                        <label for=""># Días</label>
+                                                        <input wire:model="difAgregarDetalleEdit" type="button" class="form-control" style="background-color: white">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-12">
+                                            <div class="form-group">
+                                                @if ($bo_sobreembarco_edit)
+                                                    <div class="alert alert-danger align-middle text-center">
+                                                        <strong>Adventencia: Se generará un sobre embarco!!</strong>
+                                                    </div>
+                                                @endif
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-2">
+                                            <div class="row">
+                                                <div class="col-12">
+                                                    <div class="form-group">
+                                                        <label for="">Ajuste</label>
+                                                        @if ($boAjusteEdit == true)
+                                                            <input type="number" class="form-control" wire:model="edit_ajuste">
+                                                        @else
+                                                            <input type="number" class="form-control" wire:model="edit_ajuste" disabled>
+                                                        @endif
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-10">
+                                            <div class="row">
+                                                <div class="col-12">
+                                                    <div class="form-group">
+                                                        <label for="">Observaciones</label>
+                                                        <input type="text" class="form-control" wire:model="edit_observaciones">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>                                                                                                                   
+                                </div>
+                                <div class="modal-footer">
+                                    <button wire:click="close_edit" type="button" class="btn btn-danger"
                                         data-dismiss="modal">Cancelar</button>                                    
                                     <input class="btn btn-primary" type="submit" value="Editar" wire:loading.attr="disabled">
                                 </div>

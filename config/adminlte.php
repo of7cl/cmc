@@ -331,8 +331,8 @@ return [
         ],
         [
             'text' => 'Programación de Embarcos',
-            //'route'  => 'admin.programacion_embarcos.index',            
-            'url' => '#',
+            'route'  => 'admin.programacion_embarcos.index',            
+            //'url' => '#',
             'icon' => 'fas fa-fw fa-anchor',
             'active'    => ['admin/programacion_embarcos*'],
             'can'  => 'programacion-embarcos.index',

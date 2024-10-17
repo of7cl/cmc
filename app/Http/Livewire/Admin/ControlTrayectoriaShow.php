@@ -11,17 +11,19 @@ use Livewire\Component;
 use App\Http\Controllers\CarbonController;
 use App\Models\AjusteTrayectoria;
 use App\Models\Feriado;
+use App\Models\Motivo;
 use Carbon\Carbon;
 use DateInterval;
 use DatePeriod;
 
 class ControlTrayectoriaShow extends Component
 {
-    protected $listeners = ['render' => 'render'];
+    protected $listeners = ['render' => 'render', 'deleteDetalle'];    
     public $persona;
     public $rangos;
     public $ships;
     public $estados;
+    public $motivos;
 
     public $showCabecera = true;
     public $showDetalle = true;
@@ -29,6 +31,7 @@ class ControlTrayectoriaShow extends Component
 
     public $ship_id = '';
     public $estado_id = '';
+    public $motivo_id = '';
     public $plaza_id;
     public $fc_desde;
     public $fc_hasta;
@@ -36,10 +39,23 @@ class ControlTrayectoriaShow extends Component
     public $observaciones;
     public $feriados;
 
+    public $edit_ship_id = '';
+    public $edit_estado_id = '';
+    public $edit_motivo_id = '';
+    public $edit_plaza_id = '';
+    public $edit_fc_desde = '';
+    public $edit_fc_hasta = '';
+    public $edit_ajuste = 0;
+    public $edit_observaciones = '';    
+    public $edit_detalle_id;
+
+    public $bo_embarco_1x1 = false;
+
     public $sobre_embarco_debbug;
     public $no_sobre_embarco_debbug;
 
     public $boAjuste = false;
+    public $boAjusteEdit = false;
 
     public $detallesTrayectoria;
     
@@ -47,6 +63,7 @@ class ControlTrayectoriaShow extends Component
 
     public $now;
     public $difAgregarDetalle = 0;
+    public $difAgregarDetalleEdit = 0;
     
     public $fc_fin_sistema_antiguo = '2022/03/31';
     public $sistemaAntiguo = ['fc_desde' => null, 'fc_hasta' => null, 'total_dias' => 0, 'factor' => 0, 'total_dias_acumulados' => 0, 'total_dias_consumidos' => 0, 'saldo_dias_pendientes' => 0, 'saldo_proyectado' => 0];
@@ -64,10 +81,15 @@ class ControlTrayectoriaShow extends Component
     public $feriado_progresivo = 0;
 
     public $bo_sobreembarco = false;
+    public $bo_sobreembarco_edit = false;
     public $mensaje_validacion = '';
+
+    public $max_id_det;
 
     public $sort = 'id';
     public $direction = 'desc';
+
+    public $fc_desde_ajuste_inicial;
 
     public function order($sort)
     {
@@ -93,7 +115,7 @@ class ControlTrayectoriaShow extends Component
             $this->fc_desde = $this->now; //Carbon::parse($this->now)->setTimezone('America/Santiago')->toDateString();            
             $this->fc_hasta = $this->fc_desde;
         }
-        else {
+        else {            
             $this->boAjuste = false;
             $this->ajuste = 0;
             $this->fc_desde = null;
@@ -109,8 +131,56 @@ class ControlTrayectoriaShow extends Component
                     $this->fc_hasta = $ultimoDetalleTrayectoria->fc_hasta_1;;
                 }
             }                        
-        }        
+        }            
+
+        if($this->estado_id == 3){
+            $this->bo_embarco_1x1 = true;
+            $this->reset('motivo_id');
+        }               
+        else{
+            $this->bo_embarco_1x1 = false;
+            $this->reset('motivo_id');
+        }
+
         $this->setDiferencia();
+    }
+
+    public function estadoChangeEdit()
+    {
+        if ($this->edit_estado_id == 18 || $this->edit_estado_id == 19 || $this->edit_estado_id == 20){
+            $this->boAjusteEdit = true;            
+            //$this->edit_fc_desde = $this->now; //Carbon::parse($this->now)->setTimezone('America/Santiago')->toDateString();            
+            //$this->edit_fc_hasta = $this->edit_fc_desde;
+        }
+        else {
+            $this->boAjusteEdit = false;
+            $this->edit_ajuste = 0;
+            //$this->edit_fc_desde = null;
+            //$this->edit_fc_hasta = null;
+            /* if ($this->persona->trayectoria) {
+                $ultimoDetalleTrayectoria = DetalleTrayectoria::selectRaw('date_add(fc_hasta, interval 1 day) fc_hasta_1')
+                                        ->where('trayectoria_id', $this->persona->trayectoria->id)
+                                        ->whereNotIn('estado_id', [18,19,20])
+                                        ->orderBy('id', 'desc')
+                                        ->first();
+                if($ultimoDetalleTrayectoria){
+                    $this->edit_fc_desde = $ultimoDetalleTrayectoria->fc_hasta_1;
+                    $this->edit_fc_hasta = $ultimoDetalleTrayectoria->fc_hasta_1;;
+                }
+            }  */                       
+        }        
+
+        if($this->edit_estado_id == 3){
+            $this->bo_embarco_1x1 = true;
+            $this->reset('edit_motivo_id');
+        }               
+        else{
+            $this->bo_embarco_1x1 = false;
+            $this->reset('edit_motivo_id');
+        }
+            
+
+        $this->setDiferenciaEdit();
     }
 
     public function getDetallesTrayectoria()
@@ -120,6 +190,18 @@ class ControlTrayectoriaShow extends Component
                                         ->where('trayectoria_id', $this->persona->trayectoria->id)
                                         ->orderBy($this->sort, $this->direction)
                                         ->get();
+        $this->max_id_det = DetalleTrayectoria::
+                                        selectRaw('max(id) as max_id_det')
+                                        ->where('trayectoria_id', $this->persona->trayectoria->id)
+                                        ->groupBy('trayectoria_id')
+                                        ->first();  
+                                        
+                                        //dd($this->max_id_det->max_id_det);
+    }
+
+    public function deleteDetalle($detalleId)
+    {                 
+        $det = DetalleTrayectoria::where('id', $detalleId)->delete();        
     }
 
     public function mount()
@@ -128,6 +210,7 @@ class ControlTrayectoriaShow extends Component
         $this->rangos = Rango::where('estado', 1)->orderBy('nombre', 'asc')->get();
         $this->ships = Ship::where('estado', 1)->orderBy('nombre', 'asc')->get();
         $this->estados = Estado::orderBy('id', 'asc')->get();
+        $this->motivos = Motivo::orderBy('nombre', 'asc')->get();
         $this->plaza_id = $this->persona->rango_id;
         $this->boAjusteInicial();
         if ($this->persona->trayectoria) {
@@ -160,6 +243,28 @@ class ControlTrayectoriaShow extends Component
         }
     }
 
+    public function setDiferenciaEdit()
+    {
+        if($this->edit_fc_desde && $this->edit_fc_hasta){
+            $this->difAgregarDetalleEdit = $this->diffEntreFechas($this->edit_fc_desde, $this->edit_fc_hasta) + 1;
+            if ($this->edit_estado_id == 1 || $this->edit_estado_id == 2 || $this->edit_estado_id == 16) {
+                if($this->difAgregarDetalleEdit>75)
+                {
+                    $this->bo_sobreembarco_edit = true;
+                }
+                else
+                {
+                    $this->bo_sobreembarco_edit = false;
+                }
+            }else{
+                $this->bo_sobreembarco_edit = false;
+            }
+        }
+        else{
+            $this->difAgregarDetalleEdit = 0;
+        }
+    }
+
     public function setVista($vista)
     {
         if($vista == 1) 
@@ -184,11 +289,14 @@ class ControlTrayectoriaShow extends Component
             if(!$this->ship_id)
                 $this->ship_id = null;
         }
+
+        if($this->estado_id == 3)
+            $rules['motivo_id'] = 'required';
         
         $rules['plaza_id'] = 'required';
         $rules['estado_id'] = 'required';
         $rules['fc_desde'] = 'required';
-        $rules['fc_hasta'] = 'required|after_or_equal:fc_desde';
+        $rules['fc_hasta'] = 'required|after_or_equal:fc_desde';        
 
         $this->validate($rules, $customMessages);
 
@@ -280,6 +388,40 @@ class ControlTrayectoriaShow extends Component
         return $bo_validacion;
     }
 
+    public function getValidacionesLogicaEdit()
+    {
+        $bo_validacion = 0;
+        // validación fechas solapadas
+        $ultimoDetalle = DetalleTrayectoria::where('trayectoria_id', $this->persona->trayectoria->id)
+                                            ->where('id', '<>', $this->edit_detalle_id)
+                                            ->whereNotIn('estado_id', [18,19,20])
+                                            ->orderBy('id', 'desc')->first();        
+        if($ultimoDetalle)
+        {
+            $fc_desde_ult_det = $ultimoDetalle->fc_desde;
+            $fc_hasta_ult_det = $ultimoDetalle->fc_hasta;
+            $boFcDesdeMenorIgualFcDesdeUltDet = $this->getFechaEsMenorIgualAOtra($this->edit_fc_desde, $fc_hasta_ult_det);
+            //dd($boFcDesdeMenorIgualFcDesdeUltDet.' - '.$this->fc_desde.' - '.$fc_hasta_ult_det);
+            if($boFcDesdeMenorIgualFcDesdeUltDet == 1)
+            {
+                $bo_validacion = 1;
+                $this->mensaje_validacion = 'Error en fechas ingresadas!';
+            }            
+            else
+            {
+                $bo_validacion = 0;
+            }
+        }
+        else
+        {
+            $bo_validacion = 0;
+        }
+
+        // validacion de sobreembarco
+
+        return $bo_validacion;
+    }
+
     public function close()
     {
         $this->reset('ship_id', 'estado_id', 'plaza_id', 'fc_desde', 'fc_hasta', 'ajuste', 'observaciones', 'difAgregarDetalle', 'bo_sobreembarco');
@@ -287,14 +429,124 @@ class ControlTrayectoriaShow extends Component
         $this->resetErrorBag();
     }
 
+    public function close_edit()
+    {
+        $this->reset('edit_ship_id', 'edit_estado_id', 'edit_plaza_id', 'edit_fc_desde', 'edit_fc_hasta', 'edit_ajuste', 'edit_observaciones', 'difAgregarDetalleEdit', 'bo_sobreembarco_edit', 'edit_motivo_id', 'bo_embarco_1x1');
+        $this->edit_plaza_id = $this->persona->rango_id;
+        $this->resetErrorBag();
+    }
+
     public function closeAjuste()
     {
-        $this->reset('vac_legales_lv', 'vac_legales_ld', 'embarco_1x1', 'ajuste_descanso', 'feriado_progresivo');        
+        $this->reset('vac_legales_lv', 'vac_legales_ld', 'embarco_1x1', 'ajuste_descanso', 'feriado_progresivo', 'fc_desde_ajuste_inicial');        
     }
 
     public function editAjuste()
     {
         $this->getAjusteTrayectoria();
+    }
+
+    public function editDetalle($detalleId)
+    {
+        //$this->getAjusteTrayectoria();
+        $this->edit_detalle_id = $detalleId;
+        $detalle = DetalleTrayectoria::where('id', $detalleId)->first();        
+        $this->edit_ship_id = $detalle->ship_id;
+        $this->edit_estado_id = $detalle->estado_id;
+        $this->edit_plaza_id = $detalle->plaza_id;
+        $this->edit_fc_desde = $detalle->fc_desde;
+        $this->edit_fc_hasta = $detalle->fc_hasta;
+        $this->edit_ajuste = $detalle->ajuste;
+        $this->edit_observaciones = $detalle->observaciones;
+        $this->edit_motivo_id = $detalle->motivo_id;
+        if($detalle->estado_id == 3)
+            $this->bo_embarco_1x1 = true;
+        $this->setDiferenciaEdit();
+        //dd($detalle);
+    }
+
+    public function updateDetalle()
+    {
+        $customMessages = [
+            "required" => 'Campo Obligatorio',
+            "after" => 'Fecha Hasta debe ser mayor o igual a Fecha Desde.',
+            "after_or_equal" => 'Fecha Hasta debe ser mayor o igual a Fecha Desde.'
+        ];
+
+        if($this->edit_estado_id == 1 || $this->edit_estado_id == 2 || $this->edit_estado_id == 3)
+        {
+            $rules['edit_ship_id'] = 'required';
+        }
+        else
+        {
+            if(!$this->edit_ship_id)
+                $this->edit_ship_id = null;
+        }
+
+        if($this->edit_estado_id == 3)
+            $rules['edit_motivo_id'] = 'required';
+        
+        $rules['edit_plaza_id'] = 'required';
+        $rules['edit_estado_id'] = 'required';
+        $rules['edit_fc_desde'] = 'required';
+        $rules['edit_fc_hasta'] = 'required|after_or_equal:edit_fc_desde';        
+        
+        $this->validate($rules, $customMessages);
+        
+        //validaciones de logica
+        if($this->getValidacionesLogicaEdit() == 1)
+        {
+            $this->emit('validacion', $this->mensaje_validacion);
+        }
+        else
+        {                  
+            $fecha = new CarbonController();
+            $total_dias_calendario = $fecha->diffEntreFechas($this->edit_fc_desde, $this->edit_fc_hasta) + 1;
+            
+            if ($this->edit_estado_id == 1 || $this->edit_estado_id == 2 || $this->edit_estado_id == 16) {
+                $sobre_embarco = (30 / 75) * $total_dias_calendario;
+                if ($sobre_embarco >= 30) {
+                    $fcDesde = Carbon::parse($this->edit_fc_desde);
+                    $fc_hasta = $fcDesde->addDays(74);
+                    $this->detalleEdit($this->edit_estado_id, $this->edit_fc_desde, $fc_hasta);
+                    $this->edit_fc_desde = $fc_hasta->addDays(1);                
+                    $i = 0;
+                    do {
+                        $total_dias_calendario = $fecha->diffEntreFechas($this->edit_fc_desde, $this->edit_fc_hasta) + 1;
+                        if($total_dias_calendario > 0)
+                        {
+                            $sobre_embarco = (30 / 75) * $total_dias_calendario;
+                            if ($sobre_embarco >= 30) {
+                                $fcDesde = Carbon::parse($this->edit_fc_desde);
+                                $fc_hasta = $fcDesde->addDays(74);
+                                $this->generaDetalleEdit(3, $this->edit_fc_desde, $fc_hasta);
+                                $this->edit_fc_desde = $fc_hasta->addDays(1);
+                                $i = 1;                        
+                            } else {                        
+                                $this->generaDetalleEdit(3, $this->edit_fc_desde, $this->edit_fc_hasta);
+                                $i = 0;
+                            }
+                        }else{
+                            $i = 0;
+                        }
+                    } while ($i > 0);
+                } else {
+                    $fc_desde = $this->edit_fc_desde;
+                    $fc_hasta = $this->edit_fc_hasta;                
+                    $this->generaDetalleEdit($this->edit_estado_id, $fc_desde, $fc_hasta);
+                }
+            }else{
+                //$this->generaDetalleEdit($this->edit_estado_id, $this->edit_fc_desde, $this->edit_fc_hasta);
+                $this->detalleEdit($this->edit_estado_id, $this->edit_fc_desde, $this->edit_fc_hasta);
+            }
+
+            $this->close_edit();
+            //$this->emit('render');
+            $this->emit('updateDetalle', 'Detalle editado con exito!');
+
+            //$this->detallesTrayectoria = DetalleTrayectoria::where('trayectoria_id', $this->persona->trayectoria->id)->orderBy('id', 'desc')->get();
+            $this->getDetallesTrayectoria();
+        }
     }
 
     public function updateAjuste()
@@ -308,7 +560,8 @@ class ControlTrayectoriaShow extends Component
                 'vac_legales_ld' => $this->vac_legales_ld,
                 'embarco_1x1' => $this->embarco_1x1,
                 'ajuste_descanso' => $this->ajuste_descanso,
-                'feriado_progresivo' => $this->feriado_progresivo
+                'feriado_progresivo' => $this->feriado_progresivo,
+                'fc_desde' => $this->fc_desde_ajuste_inicial
             ]);            
         }
         else{            
@@ -319,7 +572,8 @@ class ControlTrayectoriaShow extends Component
                 'vac_legales_ld' => $this->vac_legales_ld,
                 'embarco_1x1' => $this->embarco_1x1,
                 'ajuste_descanso' => $this->ajuste_descanso,
-                'feriado_progresivo' => $this->feriado_progresivo
+                'feriado_progresivo' => $this->feriado_progresivo,
+                'fc_desde' => $this->fc_desde_ajuste_inicial
             ]);            
         }   
         if($this->vac_legales_lv != 0 || $this->vac_legales_ld != 0 || $this->embarco_1x1 != 0 || $this->ajuste_descanso != 0 || $this->feriado_progresivo != 0)
@@ -383,6 +637,11 @@ class ControlTrayectoriaShow extends Component
 
         $saldo_descanso = $saldo_descanso_anterior + $descanso_convenio;
 
+        if($this->motivo_id == "")
+            $motivo_id = null;
+        else
+            $motivo_id = $this->motivo_id;
+
         $detalle = DetalleTrayectoria::create([
             'trayectoria_id' => $this->persona->trayectoria->id,
             'ship_id' => $this->ship_id,
@@ -398,11 +657,180 @@ class ControlTrayectoriaShow extends Component
             'dias_inhabiles_favor' => $dias_inhabiles_favor,
             'dias_inhabiles_consumidos' => $dias_inhabiles_consumidos,
             'ajuste' => $ajuste,
+            'motivo_id' => $motivo_id,
             'observaciones' => $observaciones
         ]);
 
         if($estado_id != 18 && $estado_id != 19 && $estado_id != 20)
             $this->upd_ship_persona($this->ship_id, $fc_desde, $fc_hasta);
+        
+    }
+
+    public function detalleEdit($estado_id, $fc_desde, $fc_hasta)
+    {
+        $detalleAnterior = DetalleTrayectoria::where('trayectoria_id', $this->persona->trayectoria->id)->orderBy('id', 'desc')->first();
+
+        $fecha = new CarbonController();
+        $total_dias_calendario = $fecha->diffEntreFechas($fc_desde, $fc_hasta) + 1;
+        $descanso_convenio = 0;
+        $saldo_descanso = 0;
+        $dias_vacaciones_consumidas = 0;
+        $dias_inhabiles_generados = 0;
+        $dias_inhabiles_favor = 0;
+        $dias_inhabiles_consumidos = 0;
+        $ajuste = 0;
+        $observaciones = $this->edit_observaciones;
+        $saldo_descanso_anterior = 0;
+        $sobre_embarco = 0;
+
+        if ($detalleAnterior) {
+            $saldo_descanso_anterior = $detalleAnterior->saldo_descanso;
+        }
+
+        if ($estado_id == 1) // EMBARCO
+        {
+            $descanso_convenio = (30 / 75) * $total_dias_calendario;
+        } elseif ($estado_id == 2) { // EMBARCO TRAINEE
+            $descanso_convenio = (30 / 75) * $total_dias_calendario;
+        } elseif ($estado_id == 3) { // EMBARCO 1X1
+            $dias_inhabiles_generados = $this->diasInhabilesGeneradosDomingos($fc_desde, $fc_hasta);
+            $dias_inhabiles_favor = $total_dias_calendario + $dias_inhabiles_generados;
+        } elseif ($estado_id == 4) { // DESCANSO
+            $descanso_convenio = $total_dias_calendario * -1;
+        } elseif ($estado_id == 5) { // DESCANSO 1X1
+            $dias_inhabiles_generados = $this->diasInhabilesGeneradosSabadosDomingos($fc_desde, $fc_hasta);
+            $dias_inhabiles_consumidos = $total_dias_calendario - $dias_inhabiles_generados;
+        } elseif ($estado_id == 6) { // VAC. LEGALES L-V
+            $dias_inhabiles_generados = $this->diasInhabilesGeneradosSabadosDomingos($fc_desde, $fc_hasta);
+            $dias_vacaciones_consumidas = $total_dias_calendario - $dias_inhabiles_generados;
+        } elseif ($estado_id == 7) { // VAC. LEGALES L-D
+            $dias_vacaciones_consumidas = $total_dias_calendario;
+        } elseif ($estado_id == 8) { // FERIADO PROGRESIVO
+            $dias_inhabiles_generados = $this->diasInhabilesGeneradosSabadosDomingos($fc_desde, $fc_hasta);
+            $dias_vacaciones_consumidas = $total_dias_calendario - $dias_inhabiles_generados;
+        } elseif ($estado_id == 16) { // CAMBIO DE NAVE
+            $descanso_convenio = (30 / 75) * $total_dias_calendario;
+        } elseif ($estado_id == 18) { // EXAMEN MÉDICO IST-CMC
+            $ajuste = $this->edit_ajuste;
+        } elseif ($estado_id == 19) { // EXAMEN MÉDICO IST-CMC
+            $ajuste = $this->edit_ajuste;
+        } elseif ($estado_id == 20) { // EXAMEN MÉDICO IST-CMC
+            $ajuste = $this->edit_ajuste;
+        }
+
+        $saldo_descanso = $saldo_descanso_anterior + $descanso_convenio;
+
+        if($this->edit_motivo_id == "")
+            $motivo_id = null;
+        else
+            $motivo_id = $this->edit_motivo_id;
+
+        DetalleTrayectoria::query()
+        ->where('id', $this->edit_detalle_id)
+        ->update([
+            //'trayectoria_id' => $this->persona->trayectoria->id,
+            'ship_id' => $this->edit_ship_id,
+            'plaza_id' => $this->edit_plaza_id,
+            'estado_id' => $estado_id,
+            'fc_desde' => $fc_desde,
+            'fc_hasta' => $fc_hasta,
+            'total_dias_calendario' => $total_dias_calendario,
+            'descanso_convenio' => $descanso_convenio,
+            'saldo_descanso' => $saldo_descanso,
+            'dias_vacaciones_consumidas' => $dias_vacaciones_consumidas,
+            'dias_inhabiles_generados' => $dias_inhabiles_generados,
+            'dias_inhabiles_favor' => $dias_inhabiles_favor,
+            'dias_inhabiles_consumidos' => $dias_inhabiles_consumidos,
+            'ajuste' => $ajuste,
+            'motivo_id' => $motivo_id,
+            'observaciones' => $observaciones
+        ]);
+
+        if($estado_id != 18 && $estado_id != 19 && $estado_id != 20)
+            $this->upd_ship_persona($this->edit_ship_id, $fc_desde, $fc_hasta);
+        
+    }
+
+    public function generaDetalleEdit($estado_id, $fc_desde, $fc_hasta)
+    {
+        $detalleAnterior = DetalleTrayectoria::where('trayectoria_id', $this->persona->trayectoria->id)->orderBy('id', 'desc')->first();
+
+        $fecha = new CarbonController();
+        $total_dias_calendario = $fecha->diffEntreFechas($fc_desde, $fc_hasta) + 1;
+        $descanso_convenio = 0;
+        $saldo_descanso = 0;
+        $dias_vacaciones_consumidas = 0;
+        $dias_inhabiles_generados = 0;
+        $dias_inhabiles_favor = 0;
+        $dias_inhabiles_consumidos = 0;
+        $ajuste = 0;
+        $observaciones = $this->edit_observaciones;
+        $saldo_descanso_anterior = 0;
+        $sobre_embarco = 0;
+
+        if ($detalleAnterior) {
+            $saldo_descanso_anterior = $detalleAnterior->saldo_descanso;
+        }
+
+        if ($estado_id == 1) // EMBARCO
+        {
+            $descanso_convenio = (30 / 75) * $total_dias_calendario;
+        } elseif ($estado_id == 2) { // EMBARCO TRAINEE
+            $descanso_convenio = (30 / 75) * $total_dias_calendario;
+        } elseif ($estado_id == 3) { // EMBARCO 1X1
+            $dias_inhabiles_generados = $this->diasInhabilesGeneradosDomingos($fc_desde, $fc_hasta);
+            $dias_inhabiles_favor = $total_dias_calendario + $dias_inhabiles_generados;
+        } elseif ($estado_id == 4) { // DESCANSO
+            $descanso_convenio = $total_dias_calendario * -1;
+        } elseif ($estado_id == 5) { // DESCANSO 1X1
+            $dias_inhabiles_generados = $this->diasInhabilesGeneradosSabadosDomingos($fc_desde, $fc_hasta);
+            $dias_inhabiles_consumidos = $total_dias_calendario - $dias_inhabiles_generados;
+        } elseif ($estado_id == 6) { // VAC. LEGALES L-V
+            $dias_inhabiles_generados = $this->diasInhabilesGeneradosSabadosDomingos($fc_desde, $fc_hasta);
+            $dias_vacaciones_consumidas = $total_dias_calendario - $dias_inhabiles_generados;
+        } elseif ($estado_id == 7) { // VAC. LEGALES L-D
+            $dias_vacaciones_consumidas = $total_dias_calendario;
+        } elseif ($estado_id == 8) { // FERIADO PROGRESIVO
+            $dias_inhabiles_generados = $this->diasInhabilesGeneradosSabadosDomingos($fc_desde, $fc_hasta);
+            $dias_vacaciones_consumidas = $total_dias_calendario - $dias_inhabiles_generados;
+        } elseif ($estado_id == 16) { // CAMBIO DE NAVE
+            $descanso_convenio = (30 / 75) * $total_dias_calendario;
+        } elseif ($estado_id == 18) { // EXAMEN MÉDICO IST-CMC
+            $ajuste = $this->edit_ajuste;
+        } elseif ($estado_id == 19) { // EXAMEN MÉDICO IST-CMC
+            $ajuste = $this->edit_ajuste;
+        } elseif ($estado_id == 20) { // EXAMEN MÉDICO IST-CMC
+            $ajuste = $this->edit_ajuste;
+        }
+
+        $saldo_descanso = $saldo_descanso_anterior + $descanso_convenio;
+
+        if($this->edit_motivo_id == "")
+            $motivo_id = null;
+        else
+            $motivo_id = $this->edit_motivo_id;
+
+        $detalle = DetalleTrayectoria::create([
+            'trayectoria_id' => $this->persona->trayectoria->id,
+            'ship_id' => $this->edit_ship_id,
+            'plaza_id' => $this->edit_plaza_id,
+            'estado_id' => $estado_id,
+            'fc_desde' => $fc_desde,
+            'fc_hasta' => $fc_hasta,
+            'total_dias_calendario' => $total_dias_calendario,
+            'descanso_convenio' => $descanso_convenio,
+            'saldo_descanso' => $saldo_descanso,
+            'dias_vacaciones_consumidas' => $dias_vacaciones_consumidas,
+            'dias_inhabiles_generados' => $dias_inhabiles_generados,
+            'dias_inhabiles_favor' => $dias_inhabiles_favor,
+            'dias_inhabiles_consumidos' => $dias_inhabiles_consumidos,
+            'ajuste' => $ajuste,
+            'motivo_id' => $motivo_id,
+            'observaciones' => $observaciones
+        ]);
+
+        if($estado_id != 18 && $estado_id != 19 && $estado_id != 20)
+            $this->upd_ship_persona($this->edit_ship_id, $fc_desde, $fc_hasta);
         
     }
 
@@ -532,6 +960,7 @@ class ControlTrayectoriaShow extends Component
             $this->embarco_1x1 = $ajusteTrayectoria->embarco_1x1;
             $this->ajuste_descanso = $ajusteTrayectoria->ajuste_descanso;
             $this->feriado_progresivo = $ajusteTrayectoria->feriado_progresivo;
+            $this->fc_desde_ajuste_inicial = $ajusteTrayectoria->fc_desde;
         }
     }
 
@@ -542,8 +971,8 @@ class ControlTrayectoriaShow extends Component
         $this->getSistemaAntiguo($boDetalleTrayectoria);
         $this->getDecretoSupremo($boDetalleTrayectoria);
         $this->getDiasProgresivos($boDetalleTrayectoria);
-        /*$this->getDias1x1();
-        $this->getDescanso(); */
+        $this->getDias1x1();
+        $this->getDescanso();
         /* if($this->getBoDetalleTrayectoria()>0)
         {
             $this->getSistemaAntiguo();
@@ -661,14 +1090,23 @@ class ControlTrayectoriaShow extends Component
 
     public function getDiasProgresivos($boDetalleTrayectoria)
     {
-        $this->diasProgresivos['fc_desde'] = $this->persona->fc_ingreso; 
+        $ajusteTrayectoria = AjusteTrayectoria::where('trayectoria_id', $this->persona->trayectoria->id)->first();
+        if($ajusteTrayectoria)            
+            $fc_desde_ajuste_inicial = $ajusteTrayectoria->fc_desde;
+        else
+            $fc_desde_ajuste_inicial = null;        
+        $this->diasProgresivos['fc_desde'] = $fc_desde_ajuste_inicial; 
         $this->diasProgresivos['fc_hasta'] = Carbon::parse($this->now)->setTimezone('America/Santiago')->toDateString();
-        $this->diasProgresivos['total_dias'] = ($this->diffEntreFechas($this->diasProgresivos['fc_desde'], $this->diasProgresivos['fc_hasta']) + 1) - 1095;
+        if($fc_desde_ajuste_inicial)
+            $this->diasProgresivos['total_dias'] = ($this->diffEntreFechas($this->diasProgresivos['fc_desde'], $this->diasProgresivos['fc_hasta']) + 1) - 1095;
+        else
+            $this->diasProgresivos['total_dias'] = 0;
         $vl_proyectado = 0;
+    
         if($boDetalleTrayectoria > 0)
         {
-            $max_fc_hasta = DetalleTrayectoria::where('trayectoria_id', $this->persona->trayectoria->id)->max('fc_hasta');
-            $cn_pro = ($this->diffEntreFechas($this->diasProgresivos['fc_desde'], $max_fc_hasta) + 1) - 1095;
+            $max_fc_hasta = DetalleTrayectoria::where('trayectoria_id', $this->persona->trayectoria->id)->max('fc_hasta');            
+            $cn_pro = ($this->diffEntreFechas($this->diasProgresivos['fc_desde'], $max_fc_hasta) + 1) - 1095;            
             if($this->diasProgresivos['total_dias'] <= 0){ 
                 $this->diasProgresivos['factor'] = 0;
                 $this->diasProgresivos['total_dias_acumulados'] = 0;

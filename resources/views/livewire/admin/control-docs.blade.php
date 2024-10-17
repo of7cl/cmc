@@ -158,7 +158,7 @@ foreach ($rangos as $rango) {
                                             data-target="#modalCreatePersona" data-backdrop="static"
                                             data-keyboard="false"><i class="fas fa-edit"></i></button>
                                     </td>
-                                    <td class="border border-secondary align-middle text-center">
+                                    <td class="border border-secondary align-middle text-center" >
                                         @if ($persona->ship_id)
                                             {{ $persona->ship->nombre }}
                                         @else
@@ -176,11 +176,11 @@ foreach ($rangos as $rango) {
                                                     $nm_estado = 'En Tierra';
                                                 }
                                                 else {
-                                                    $nm_estado = 'Sin Programación';
+                                                    $nm_estado = 'En Tierra';
                                                 }
                                             }
                                             else {
-                                                $nm_estado = 'Sin Programación';
+                                                $nm_estado = 'En Tierra';
                                             }
                                             ?>
                                             {{ $nm_estado }}
@@ -194,7 +194,7 @@ foreach ($rangos as $rango) {
                                         @endif
                                     </td>
                                     <td class="border border-secondary">
-                                        {{ $persona->nombre }}
+                                        {{ $persona->id }} - {{ $persona->nombre }}
                                     </td>
                                     @foreach ($documentos as $documento)
                                         <?php
@@ -639,10 +639,11 @@ foreach ($rangos as $rango) {
                                         @if ($archivo)
                                             <embed src="{{ $archivo->temporaryUrl() }}" width="100%"
                                                 height="400px" />
-                                        @else
+                                        @else                                            
                                             @if ($nm_archivo_guardado)
                                                 <embed src="{{ asset('storage/' . $nm_archivo_guardado) }}"
                                                     width="100%" height="400px" />
+                                                {{-- <a href="mailto:someone@example.com">someone@example.com</a> --}}
                                             @endif
                                         @endif
                                     </div>

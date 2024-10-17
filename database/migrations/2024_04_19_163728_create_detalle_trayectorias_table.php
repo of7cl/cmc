@@ -19,6 +19,7 @@ return new class extends Migration
             $table->unsignedBigInteger('trayectoria_id');
             $table->unsignedBigInteger('ship_id')->nullable();
             $table->unsignedBigInteger('estado_id')->nullable();
+            $table->unsignedBigInteger('motivo_id')->nullable();
             $table->unsignedBigInteger('plaza_id')->nullable();
             $table->date('fc_desde')->nullable();
             $table->date('fc_hasta')->nullable();
@@ -36,6 +37,7 @@ return new class extends Migration
             $table->foreign('ship_id')->references('id')->on('ships')->onDelete('set null');
             $table->foreign('estado_id')->references('id')->on('estados')->onDelete('set null');
             $table->foreign('plaza_id')->references('id')->on('rangos')->onDelete('set null');
+            $table->foreign('motivo_id')->references('id')->on('motivos')->onDelete('set null');
 
             $table->timestamps();
         });

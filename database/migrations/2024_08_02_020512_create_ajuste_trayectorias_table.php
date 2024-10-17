@@ -23,6 +23,7 @@ return new class extends Migration
             $table->integer('embarco_1x1')->default(0);
             $table->integer('ajuste_descanso')->default(0);
             $table->integer('feriado_progresivo')->default(0);
+            $table->date('fc_desde')->nullable();
 
             $table->foreign('trayectoria_id')->references('id')->on('trayectorias')->onDelete('cascade');
 

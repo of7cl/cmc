@@ -28,5 +28,20 @@
             });
             $('#modalCreatePersona').modal('hide')
         })
-    </script>    
+    
+        Livewire.on('position', function(message) {
+                 
+        })    
+
+        Livewire.on('agregarProgramacion', function(message) {
+            Swal.fire({
+                //title: "OK!",
+                text: message,
+                icon: "success",
+                showConfirmButton: true
+            });
+            $('#modalAgregarProgramacion').modal('hide')
+        })
+           
+    </script>
 @endsection

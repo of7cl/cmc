@@ -41,6 +41,16 @@
             $('#modalAgregarDetalle').modal('hide')
         })
 
+        Livewire.on('updateDetalle', function(message) {
+            Swal.fire({
+                //title: "OK!",
+                text: message,
+                icon: "success",
+                showConfirmButton: true
+            });
+            $('#modalEditDetalle').modal('hide')
+        })
+
         Livewire.on('ajuste', function(message) {
             Swal.fire({
                 //title: "OK!",
@@ -59,6 +69,30 @@
                 showConfirmButton: true
             });
             //$('#modalAgregarDetalle').modal('hide')
+        })
+
+        Livewire.on('delDetalle', DetalleId => {
+            
+            Swal.fire({
+                title: "¿Estás Seguro?",
+                text: "",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#3085d6",
+                cancelButtonColor: "#d33",
+                confirmButtonText: "¡Si, Eliminar!",
+                cancelButtonText: "Cancelar"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    Livewire.emit('deleteDetalle', DetalleId);
+                        Swal.fire({
+                        title: "Eliminado!",
+                        text: "Detalle ha sido eliminado con exito.",
+                        icon: "success"
+                        });
+                    //this.submit();
+                }
+            });
         })
     </script>
 

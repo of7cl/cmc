@@ -30,7 +30,7 @@ class ControlDocs extends Component
     public $nameFilter;
     public $rangoFilter;
     public $shipFilter;
-    public $recordsPage = '15';
+    public $recordsPage = '30';
 
     public $persona;
     //public $personas;
@@ -105,12 +105,22 @@ class ControlDocs extends Component
 
     public function render()
     {
+        $nave = Ship::where('id', $this->shipFilter)->first();
+        $nm_nave = 'sin nave';
+        if($nave)
+            $nm_nave = $nave->nombre;
         $personas = Persona::query()
             ->where('estado', 1)
             ->when($this->rangoFilter, function ($query) {
                 $query->where('rango_id', $this->rangoFilter);
             })
-            ->when($this->shipFilter, function ($query) {
+            /* ->when($this->shipFilter, function ($query) {
+                $query->where('ship_id', $this->shipFilter);
+            }) */
+            ->when($nm_nave == 'En Tierra', function ($query) {
+                $query->where('ship_id', null);
+            })
+            ->when($nm_nave != 'En Tierra' && $this->shipFilter, function ($query) {
                 $query->where('ship_id', $this->shipFilter);
             })
             ->when($this->nameFilter, function ($query) {
@@ -152,7 +162,7 @@ class ControlDocs extends Component
 
     public function edit_doc($documento_id, Persona $persona)
     {
-        $this->skipRender();
+        //$this->skipRender();
         $this->persona = $persona;
         foreach ($persona->documento as $documento) {
             if ($documento->pivot->documento_id == $documento_id) {
@@ -304,7 +314,7 @@ class ControlDocs extends Component
 
     public function close_doc()
     {
-        $this->skipRender();
+        //$this->skipRender();
         $this->reset('persona', 'nombre', 'nombre_doc', 'codigo_omi', 'nr_documento', 'id_documento', 'nm_archivo_original', 'nm_archivo_guardado', 'estado', 'fc_fin', 'fc_inicio', 'archivo');
         $this->identificador = rand();
         $this->resetErrorBag();

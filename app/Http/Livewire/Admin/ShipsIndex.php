@@ -25,6 +25,7 @@ class ShipsIndex extends Component
     {
         //$ships = Ship::where('estado', 1)->get();
         $ships = Ship::query()
+            ->where('nombre', '<>', 'En Tierra')
             ->when($this->naveFilter, function ($query) {
                 $query->where('nombre', 'LIKE', '%' . $this->naveFilter . '%');
             })
